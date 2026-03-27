@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>萌宠管家-终极稳定版(Chrome146)</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui,"微软雅黑",sans-serif;
+}
+body {
+  background: #fdf6f8;
+  padding-bottom: 80px;
+}
+
+/* 导航：强制置顶、最高层级、绝对可点击 */
+#mainNav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 52px;
+  background: #fff;
+  display: flex;
+  z-index: 9999999;
+  pointer-events: auto !important;
+  -webkit-pointer-events: auto !important;
+  box-shadow: 0 1px 6px #eee;
+}
+.navBtn {
+  flex: 1;
+  line-height: 52px;
+  text-align: center;
+  font-size: 15px;
+  color: #666;
+  cursor: pointer;
+  user-select: none;
+}
+.navBtn.active {
+  color: #ff5c8d;
+  border-bottom: 3px solid #ff5c8d;
+  font-weight: bold;
+}
+
+.main {
+  margin-top: 58px;
+  padding: 15px;
+}
+.page {
+  display: none;
+}
+.page.show {
+  display: block;
+}
+
+.banner{width:100%;height:150px;border-radius:16px;background:linear-gradient(135deg,#ff9aaa,#ffccd5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:bold;margin-bottom:20px;}
+.form-box{background:#fff;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+.form-item{margin-bottom:14px;}
+.form-item label{display:block;font-size:14px;color:#555;margin-bottom:5px;}
+.form-item input,.form-item select,.form-item textarea{width:100%;padding:11px;border:1px solid #eee;border-radius:10px;outline:none;font-size:14px;}
+.btn{width:100%;background:linear-gradient(90deg,#ff5c8d,#ff7ba7);color:#fff;border:none;padding:12px;border-radius:10px;font-size:16px;cursor:pointer;margin-top:8px;}
+.small-btn{background:#ccc;color:#333;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
+.service-item{padding:10px;border:1px solid #eee;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.order-item{background:#fff;padding:12px;border-radius:10px;margin-bottom:10px;border-left:4px solid #ff5c8d;}
+.post-item{background:#fff;padding:15px;border-radius:12px;margin-bottom:12px;}
+.pop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:99999999;}
+.pop-box{background:#fff;width:80%;border-radius:16px;padding:25px;text-align:center;}
+</style>
+</head>
+<body>
+
+<!-- 原生onclick直绑，Chrome146永远有效 -->
+<div id="mainNav">
+  <div class="navBtn active" onclick="showPage(0)">下单预约</div>
+  <div class="navBtn" onclick="showPage(1)">宠友社区</div>
+  <div class="navBtn" onclick="showPage(2)">商家后台</div>
+</div>
+
+<div class="main">
+  <!-- 预约页 -->
+  <div class="page show" id="page0">
+    <div class="banner">🐾 萌宠管家 上门贴心喂养</div>
+    <div class="form-box">
+      <h4>可选服务</h4>
+      <div id="serviceList"></div>
+    </div>
+    <div class="form-box">
+      <div class="form-item"><label>选择服务</label><select id="selService"></select></div>
+      <div class="form-item"><label>昵称</label><input id="uName"></div>
+      <div class="form-item"><label>手机号</label><input id="uPhone"></div>
+      <div class="form-item"><label>上门地址</label><input id="uAddr"></div>
+      <div class="form-item"><label>预约时间</label><input type="datetime-local" id="uTime"></div>
+      <div class="form-item"><label>宠物备注</label><textarea id="uNote" rows="3"></textarea></div>
+      <button class="btn" onclick="submitOrder()">提交预约</button>
+    </div>
+  </div>
+
+  <!-- 社区页 -->
+  <div class="page" id="page1">
+    <div class="banner">🐱 宠友交流社区</div>
+    <div class="form-box">
+      <div class="form-item"><label>发帖昵称</label><input id="pNick"></div>
+      <div class="form-item"><label>分享内容</label><textarea id="pText" rows="4"></textarea></div>
+      <button class="btn" onclick="addPost()">发布帖子</button>
+    </div>
+    <div id="postList"></div>
+  </div>
+
+  <!-- 商家后台 -->
+  <div class="page" id="page2">
+    <div class="banner">🔐 商家管理中心</div>
+    <div id="loginBox" class="form-box" style="text-align:center;">
+      <p>密码：123456</p >
+      <input type="password" id="adminPwd">
+      <br><br>
+      <button class="btn" onclick="adminLogin()">登录</button>
+    </div>
+    <div id="adminPanel" style="display:none;">
+      <div class="form-box">
+        <h4>修改服务价格</h4>
+        <div id="priceEdit"></div>
+      </div>
+      <div class="form-box">
+        <h4>添加新服务</h4>
+        <div class="form-item"><label>服务名称</label><input id="newName"></div>
+        <div class="form-item"><label>价格(元)</label><input type="number" id="newPrice"></div>
+        <button class="btn" onclick="addNewService()">添加</button>
+      </div>
+      <div class="form-box">
+        <h4>全部订单</h4>
+        <div id="orderList"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 弹窗 -->
+  <div class="pop" id="pop">
+    <div class="pop-box">
+      <h4 id="popText"></h4>
+      <br>
+      <button class="small-btn" onclick="closePop()">确定</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== 全局配置（本地存储） ==========
+function getServices() {
+  let data = localStorage.getItem("petServices");
+  if (!data) {
+    let init = [
+      { name: "喂猫铲屎换水", price: 29 },
+      { name: "小型犬遛狗陪伴", price: 39 },
+      { name: "多宠专人看护", price: 59 },
+      { name: "毛发清洁护理", price: 45 }
+    ];
+    localStorage.setItem("petServices", JSON.stringify(init));
+    return init;
+  }
+  return JSON.parse(data);
+}
+function saveServices(arr) {
+  localStorage.setItem("petServices", JSON.stringify(arr));
+}
+
+// ========== 页面切换（原生直绑，永不失效） ==========
+function showPage(num) {
+  // 切换导航
+  let btns = document.querySelectorAll(".navBtn");
+  btns.forEach(b => b.classList.remove("active"));
+  btns[num].classList.add("active");
+  // 切换页面
+  let pages = document.querySelectorAll(".page");
+  pages.forEach(p => p.classList.remove("show"));
+  document.getElementById("page" + num).classList.add("show");
+  // 按需渲染
+  if (num === 0) renderServices();
+  if (num === 1) renderPosts();
+}
+
+// ========== 服务渲染 ==========
+function renderServices() {
+  let list = getServices();
+  let html = "", opt = "";
+  list.forEach((s, i) => {
+    html += `<div class="service-item">${s.name} <span>¥${s.price}/次</span></div>`;
+    opt += `<option value="${i}">${s.name} ¥${s.price}</option>`;
+  });
+  document.getElementById("serviceList").innerHTML = html;
+  document.getElementById("selService").innerHTML = opt;
+}
+
+// ========== 商家价格编辑 ==========
+function renderPriceEdit() {
+  let list = getServices();
+  let html = "";
+  list.forEach((s, i) => {
+    html += `
+    <div class="form-item">
+      <label>${s.name}</label>
+      <input type="number" id="p_${i}" value="${s.price}">
+      <button class="small-btn" onclick="savePrice(${i})">保存</button>
+    </div>
+    `;
+  });
+  document.getElementById("priceEdit").innerHTML = html;
+}
+function savePrice(idx) {
+  let list = getServices();
+  let val = document.getElementById("p_" + idx).value;
+  if (!val || val <= 0) { alert("请输入正确价格"); return; }
+  list[idx].price = Number(val);
+  saveServices(list);
+  renderServices();
+  renderPriceEdit();
+  showPop("价格已保存");
+}
+function addNewService() {
+  let name = document.getElementById("newName").value.trim();
+  let price = document.getElementById("newPrice").value;
+  if (!name || !price || price <= 0) { alert("请填写完整"); return; }
+  let list = getServices();
+  list.push({ name, price: Number(price) });
+  saveServices(list);
+  document.getElementById("newName").value = "";
+  document.getElementById("newPrice").value = "";
+  renderServices();
+  renderPriceEdit();
+  showPop("新服务已添加");
+}
+
+// ========== 订单 ==========
+function getOrders() { return JSON.parse(localStorage.getItem("petOrders")) || []; }
+function saveOrders(arr) { localStorage.setItem("petOrders", JSON.stringify(arr)); }
+function submitOrder() {
+  let idx = document.getElementById("selService").value;
+  let s = getServices()[idx];
+  let name = uName.value.trim(), phone = uPhone.value.trim(), addr = uAddr.value.trim(), time = uTime.value;
+  if (!name || !phone || !addr || !time) { alert("请完善信息"); return; }
+  let order = {
+    id: Date.now(), name, phone, addr, service: s.name, price: s.price, time, note: uNote.value || "无", status: "待接单"
+  };
+  let orders = getOrders();
+  orders.unshift(order);
+  saveOrders(orders);
+  showPop("预约成功");
+  uName.value = ""; uPhone.value = ""; uAddr.value = ""; uNote.value = "";
+}
+function renderOrders() {
+  let list = getOrders();
+  let html = "";
+  if (list.length === 0) html = "<div style='padding:15px;text-align:center;color:#999;'>暂无订单</div>";
+  list.forEach(o => {
+    html += `
+    <div class="order-item">
+      <p>姓名：${o.name}</p >
+      <p>手机：${o.phone}</p >
+      <p>服务：${o.service} ¥${o.price}</p >
+      <p>地址：${o.addr}</p >
+      <p>时间：${o.time}</p >
+      <p>状态：${o.status}</p >
+    </div>
+    `;
+  });
+  document.getElementById("orderList").innerHTML = html;
+}
+
+// ========== 社区帖子 ==========
+function getPosts() { return JSON.parse(localStorage.getItem("petPosts")) || []; }
+function savePosts(arr) { localStorage.setItem("petPosts", JSON.stringify(arr)); }
+function addPost() {
+  let nick = pNick.value.trim(), text = pText.value.trim();
+  if (!nick || !text) { alert("昵称和内容不能为空"); return; }
+  let post = { id: Date.now(), nick, text, like: 0 };
+  let posts = getPosts();
+  posts.unshift(post);
+  savePosts(posts);
+  pNick.value = ""; pText.value = "";
+  renderPosts();
+  showPop("发帖成功");
+}
+function renderPosts() {
+  let list = getPosts();
+  let html = "";
+  if (list.length === 0) html = "<div style='padding:15px;text-align:center;color:#999;'>暂无帖子</div>";
+  list.forEach(p => {
+    html += `
+    <div class="post-item">
+      <div><strong>${p.nick}</strong></div>
+      <div style="margin:8px 0;">${p.text}</div>
+      <div style="color:#ff5c8d">❤️点赞 ${p.like}</div>
+    </div>
+    `;
+  });
+  document.getElementById("postList").innerHTML = html;
+}
+
+// ========== 商家登录 ==========
+function adminLogin() {
+  if (adminPwd.value === "123456") {
+    document.getElementById("loginBox").style.display = "none";
+    document.getElementById("adminPanel").style.display = "block";
+    renderPriceEdit();
+    renderOrders();
+    showPop("登录成功");
+  } else {
+    alert("密码错误");
+  }
+}
+
+// ========== 弹窗 ==========
+function showPop(text) {
+  document.getElementById("popText").innerText = text;
+  document.getElementById("pop").style.display = "flex";
+}
+function closePop() {
+  document.getElementById("pop").style.display = "none";
+}
+
+// 初始化
+window.onload = function() {
+  renderServices();
+  renderPosts();
+};
+</script>
+
+</body>
+</html>
