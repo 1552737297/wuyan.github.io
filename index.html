@@ -1,663 +1,703 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>🎮 泰拉瑞亚风格 · 像素转换器</title>
-  <style>
-    /* 整体风格保持原有复古游戏感，仅做细微调整 */
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      background: #1e2229;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Segoe UI', 'Press Start 2P', 'Courier New', monospace;
-      padding: 20px;
-    }
-
-    .pixel-card {
-      max-width: 1200px;
-      width: 100%;
-      background: #3a404a;
-      border-radius: 32px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 2px #6b7a8a;
-      padding: 24px;
-      border: 6px solid #2a3038;
-    }
-
-    h1 {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 2.2rem;
-      font-weight: 800;
-      color: #e6d5b8;
-      text-shadow: 4px 4px 0 #4a3a2a;
-      letter-spacing: 2px;
-      margin-bottom: 20px;
-      border-bottom: 4px dashed #8b7a62;
-      padding-bottom: 16px;
-    }
-
-    .upload-area {
-      background: #4b5663;
-      border-radius: 24px;
-      padding: 28px 20px;
-      text-align: center;
-      border: 3px dashed #9ab8d4;
-      margin-bottom: 24px;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: #e6d5b8;
-    }
-
-    .upload-area:hover { background: #5f6c7c; border-color: #c0daf0; }
-    .upload-area input { display: none; }
-
-    .preview-panel {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .canvas-container {
-      flex: 2;
-      min-width: 320px;
-      background: #252a31;
-      padding: 16px;
-      border-radius: 24px;
-      box-shadow: inset 0 0 0 4px #1a1e24, 0 8px 0 #15191f;
-    }
-
-    #pixelCanvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      image-rendering: crisp-edges;
-      image-rendering: pixelated;
-      border-radius: 12px;
-      box-shadow: 0 0 0 3px #5a6b7a;
-      background: #fff;
-    }
-
-    .controls {
-      flex: 1.2;
-      min-width: 280px;
-      background: #3f4853;
-      border-radius: 24px;
-      padding: 22px 20px;
-      box-shadow: inset 0 0 0 2px #6c7f8f, 0 8px 0 #2a3038;
-      border: 2px solid #1e242a;
-      color: #e6d5b8;
-    }
-
-    .control-group {
-      margin-bottom: 24px;
-    }
-
-    .control-group label {
-      display: flex;
-      justify-content: space-between;
-      font-weight: bold;
-      color: #f0e6d2;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      font-size: 0.9rem;
-      margin-bottom: 8px;
-    }
-
-    input[type="range"] {
-      width: 100%;
-      margin: 8px 0;
-      -webkit-appearance: none;
-      background: transparent;
-    }
-
-    input[type="range"]::-webkit-slider-runnable-track {
-      height: 12px;
-      background: #2a323c;
-      border-radius: 12px;
-      box-shadow: inset 0 1px 4px #0f1216;
-    }
-
-    input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      height: 26px;
-      width: 26px;
-      border-radius: 6px;
-      background: #c9a87c;
-      margin-top: -7px;
-      border: 2px solid #1e1a14;
-      box-shadow: 0 3px 0 #6b5a44;
-      cursor: pointer;
-    }
-
-    select {
-      width: 100%;
-      padding: 12px 16px;
-      background: #fbf3e0;
-      border: 3px solid #3f4a54;
-      border-radius: 20px;
-      font-weight: bold;
-      color: #1e242a;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .checkbox-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 16px 0;
-    }
-
-    .checkbox-item input {
-      width: 24px;
-      height: 24px;
-      accent-color: #b87c4d;
-      transform: scale(1.2);
-    }
-
-    .btn {
-      background: #b68b5c;
-      border: none;
-      border-radius: 48px;
-      padding: 16px 20px;
-      font-weight: bold;
-      font-size: 1.2rem;
-      color: #1e1a14;
-      box-shadow: 0 6px 0 #6b4f36, 0 2px 8px rgba(0,0,0,0.2);
-      border: 2px solid #fbeec9;
-      cursor: pointer;
-      width: 100%;
-      transition: all 0.05s ease-in;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-    }
-
-    .btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #6b4f36, 0 2px 6px rgba(0,0,0,0.2);
-    }
-
-    .btn.export {
-      background: #4f7a5c;
-      color: #f0f0d8;
-      box-shadow: 0 6px 0 #2f4a38;
-      border-color: #bdd6b5;
-      margin-top: 12px;
-    }
-
-    .value-display {
-      font-family: 'Courier New', monospace;
-      background: #1e242a;
-      color: #f0ddaa;
-      padding: 4px 12px;
-      border-radius: 30px;
-    }
-
-    .footer-note {
-      margin-top: 16px;
-      color: #b8a890;
-      text-align: center;
-      font-size: 0.8rem;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🎨 自定制 · 像素风格工坊</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #1a1e26;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', 'Press Start 2P', 'Courier New', monospace;
+            padding: 20px;
+        }
+        .workshop {
+            max-width: 1400px;
+            width: 100%;
+            background: #2d3440;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 2px #5a6a7a;
+            padding: 28px;
+            border: 6px solid #1e242c;
+        }
+        h1 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #e6d5b8;
+            text-shadow: 4px 4px 0 #3a2e22;
+            margin-bottom: 20px;
+        }
+        h1 span {
+            font-size: 1rem;
+            background: #4f6a7a;
+            padding: 6px 16px;
+            border-radius: 60px;
+            color: #f0e6d2;
+            margin-left: auto;
+        }
+        .main-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        /* 左侧：画布与上传 */
+        .canvas-area {
+            flex: 2;
+            min-width: 360px;
+            background: #232931;
+            border-radius: 28px;
+            padding: 20px;
+            box-shadow: inset 0 0 0 3px #151a20, 0 8px 0 #12171c;
+        }
+        .upload-zone {
+            background: #3a4553;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            border: 2px dashed #8ea5bb;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: 0.15s;
+            color: #e6d5b8;
+        }
+        .upload-zone:hover {
+            background: #4a5768;
+            border-color: #c0daf0;
+        }
+        .upload-zone input {
+            display: none;
+        }
+        #pixelCanvas {
+            display: block;
+            width: 100%;
+            height: auto;
+            image-rendering: crisp-edges;
+            image-rendering: pixelated;
+            border-radius: 16px;
+            box-shadow: 0 0 0 4px #4a5b6b;
+            background: #fff;
+        }
+        .canvas-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            color: #b8c7d4;
+            padding: 0 6px;
+        }
+        /* 右侧：控制面板 */
+        .control-panel {
+            flex: 1.4;
+            min-width: 380px;
+            background: #3f4a58;
+            border-radius: 28px;
+            padding: 24px 20px;
+            box-shadow: inset 0 0 0 2px #6c7f8f, 0 8px 0 #2a323c;
+            border: 2px solid #1e242a;
+            color: #f0e6d2;
+            overflow-y: auto;
+            max-height: 800px;
+        }
+        .section-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin: 20px 0 12px;
+            color: #ffda9e;
+            border-bottom: 2px solid #7e8c9c;
+            padding-bottom: 6px;
+        }
+        .slider-group {
+            margin-bottom: 20px;
+        }
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 6px 0;
+        }
+        .palette-editor {
+            background: #2e3843;
+            border-radius: 20px;
+            padding: 16px;
+            margin-top: 10px;
+        }
+        .color-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 12px 0;
+            max-height: 180px;
+            overflow-y: auto;
+            padding: 6px;
+        }
+        .color-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: #1e242a;
+            padding: 6px 10px;
+            border-radius: 40px;
+            border: 1px solid #6c7f8f;
+        }
+        .color-preview {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: 2px solid #f0e6d2;
+            cursor: pointer;
+        }
+        .color-item input[type="color"] {
+            width: 0;
+            height: 0;
+            opacity: 0;
+            position: absolute;
+        }
+        .remove-color {
+            background: #c05763;
+            border: none;
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 30px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn {
+            background: #b68b5c;
+            border: none;
+            border-radius: 60px;
+            padding: 12px 18px;
+            font-weight: bold;
+            color: #1e1a14;
+            box-shadow: 0 5px 0 #6b4f36;
+            border: 2px solid #fbeec9;
+            cursor: pointer;
+            transition: 0.05s linear;
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 2px 0 #6b4f36;
+        }
+        .btn.small {
+            padding: 8px 14px;
+            font-size: 0.8rem;
+        }
+        .btn.primary {
+            background: #4f7a9c;
+            box-shadow: 0 5px 0 #2f4a5c;
+            color: #f0f0d8;
+        }
+        .preset-actions {
+            display: flex;
+            gap: 8px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
+        .export-btn {
+            background: #5e9b7e;
+            box-shadow: 0 5px 0 #3a614e;
+        }
+        .value-badge {
+            background: #1e242a;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-family: monospace;
+            color: #f0ddaa;
+        }
+        .note {
+            font-size: 0.8rem;
+            color: #b8a890;
+            margin-top: 16px;
+        }
+    </style>
 </head>
 <body>
-<div class="pixel-card">
-  <h1>
-    <span>🕹️</span> 泰拉瑞亚·像素化
-    <span style="margin-left: auto; font-size: 1rem;">▼ 点击或拖拽上传图片</span>
-  </h1>
+<div class="workshop">
+    <h1>
+        🛠️ 像素风格自定制工坊
+        <span>YOUR UNIQUE STYLE</span>
+    </h1>
 
-  <!-- 上传区域 -->
-  <div class="upload-area" id="uploadArea">
-    <div class="upload-icon">📁⬇️</div>
-    <div style="font-size: 1.2rem; font-weight: bold;">点击或拖拽图片至此</div>
-    <div style="margin-top: 8px; opacity: 0.8;">支持 PNG, JPG, GIF, WEBP</div>
-    <input type="file" id="fileInput" accept="image/*">
-  </div>
+    <div class="main-panel">
+        <!-- 左侧：画布区域 -->
+        <div class="canvas-area">
+            <div class="upload-zone" id="uploadArea">
+                <div style="font-size: 42px;">📁⬇️</div>
+                <div style="font-weight: bold; font-size: 1.2rem;">点击或拖拽上传图片</div>
+                <div style="margin-top: 8px; opacity: 0.8;">PNG, JPG, WEBP</div>
+                <input type="file" id="fileInput" accept="image/*">
+            </div>
+            <canvas id="pixelCanvas" width="400" height="400"></canvas>
+            <div class="canvas-info">
+                <span id="sizeInfo">400 x 400</span>
+                <span id="colorCountInfo">颜色数: —</span>
+            </div>
+        </div>
 
-  <div class="preview-panel">
-    <!-- 画布区 -->
-    <div class="canvas-container">
-      <canvas id="pixelCanvas" width="400" height="400"></canvas>
-      <div style="display: flex; justify-content: space-between; margin-top: 12px; color: #efe0cd; padding: 0 4px;">
-        <span id="sizeInfo">400x400</span>
-        <span id="colorCountInfo">颜色数: —</span>
-      </div>
+        <!-- 右侧：控制区 -->
+        <div class="control-panel">
+            <div class="section-title">⚙️ 像素化参数</div>
+            <div class="slider-group">
+                <label>🔲 像素尺寸 <span class="value-badge" id="pixelSizeVal">8</span></label>
+                <input type="range" id="pixelSize" min="2" max="32" value="8" step="1">
+            </div>
+            <div class="slider-group">
+                <label>🎨 颜色数量 <span class="value-badge" id="colorNumVal">16</span></label>
+                <input type="range" id="colorNum" min="2" max="64" value="16" step="1">
+            </div>
+            <div class="slider-group">
+                <label>✨ 杂色强度 <span class="value-badge" id="noiseVal">0.0</span></label>
+                <input type="range" id="noiseStrength" min="0" max="0.3" value="0.08" step="0.01">
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="outlineCheck" checked> <label>✏️ 黑色描边</label>
+            </div>
+            <div class="checkbox-item">
+                <input type="checkbox" id="ditherCheck"> <label>🌓 色彩抖动 (Bayer)</label>
+            </div>
+
+            <div class="section-title">🎨 我的调色板 (可编辑)</div>
+            <div class="palette-editor">
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <button class="btn small" id="addColorBtn">➕ 添加颜色</button>
+                    <button class="btn small" id="resetPaletteBtn">🔄 重置默认</button>
+                </div>
+                <div class="color-list" id="colorListContainer">
+                    <!-- 动态渲染 -->
+                </div>
+                <p style="font-size:0.8rem; margin-top:8px;">点击色块可修改，点击✖删除。最多32色。</p>
+            </div>
+
+            <div class="section-title">💾 预设管理</div>
+            <div class="preset-actions">
+                <button class="btn small" id="savePresetBtn">📥 保存当前配置</button>
+                <button class="btn small" id="loadPresetBtn">📂 加载配置</button>
+                <button class="btn small" id="exportPresetBtn">🔗 导出为文件</button>
+            </div>
+            <div style="margin-top: 12px;">
+                <input type="file" id="presetFileInput" accept=".json" style="display:none;">
+                <button class="btn small" id="importPresetBtn">📤 导入配置文件</button>
+            </div>
+
+            <div style="margin-top: 24px; display: flex; gap: 10px;">
+                <button class="btn primary" id="applyBtn">✨ 应用转换</button>
+                <button class="btn export-btn" id="exportImageBtn">💾 导出图片</button>
+            </div>
+            <div class="note">
+                ⚡ 修改参数后点击“应用转换”。调色板自定义会立即生效，打造你的专属风格。
+            </div>
+        </div>
     </div>
-
-    <!-- 控制区 -->
-    <div class="controls">
-      <div class="control-group">
-        <label>🔲 像素尺寸 <span class="value-display" id="pixelSizeVal">8</span></label>
-        <input type="range" id="pixelSize" min="2" max="32" value="8" step="1">
-      </div>
-
-      <div class="control-group">
-        <label>🎨 最大颜色数 <span class="value-display" id="colorNumVal">16</span></label>
-        <input type="range" id="colorNum" min="2" max="64" value="16" step="1">
-      </div>
-
-      <div class="control-group">
-        <label>🌈 调色板预设</label>
-        <select id="paletteSelect">
-          <option value="terraria" selected>⚔️ 泰拉瑞亚复古 (推荐)</option>
-          <option value="bright">🌟 明亮卡通</option>
-          <option value="retro">📺 复古游戏 (DB16)</option>
-          <option value="mono">🎞️ 黑白漫画</option>
-        </select>
-      </div>
-
-      <div class="checkbox-item">
-        <input type="checkbox" id="noiseCheck" checked> 
-        <label style="margin-bottom:0;">✨ 增加杂色 (泰拉风纹理)</label>
-      </div>
-
-      <div class="checkbox-item">
-        <input type="checkbox" id="ditherCheck"> 
-        <label style="margin-bottom:0;">🌓 色彩抖动 (增加过渡感)</label>
-      </div>
-
-      <div class="checkbox-item">
-        <input type="checkbox" id="outlineCheck"> 
-        <label style="margin-bottom:0;">✏️ 添加黑色描边</label>
-      </div>
-
-      <button class="btn" id="applyBtn">✨ 立即转换</button>
-      <button class="btn export" id="exportBtn">💾 导出像素画</button>
-      <div style="margin-top: 16px;">
-        <button class="btn" id="resetBtn" style="background:#7e8a7a; box-shadow:0 6px 0 #4f5a4b;">🔄 重置图片</button>
-      </div>
-      <div class="footer-note">
-        * 调整参数后自动预览 | 灵感来自泰拉瑞亚
-      </div>
-    </div>
-  </div>
 </div>
 
 <script>
-  (function(){
-    "use strict";
+    (function(){
+        "use strict";
 
-    // ---------- DOM 元素 ----------
-    const fileInput = document.getElementById('fileInput');
-    const uploadArea = document.getElementById('uploadArea');
-    const canvas = document.getElementById('pixelCanvas');
-    const ctx = canvas.getContext('2d', { willReadFrequently: true });
-    
-    const pixelSizeSlider = document.getElementById('pixelSize');
-    const colorNumSlider = document.getElementById('colorNum');
-    const paletteSelect = document.getElementById('paletteSelect');
-    const noiseCheck = document.getElementById('noiseCheck');
-    const ditherCheck = document.getElementById('ditherCheck');
-    const outlineCheck = document.getElementById('outlineCheck');
-    const applyBtn = document.getElementById('applyBtn');
-    const exportBtn = document.getElementById('exportBtn');
-    const resetBtn = document.getElementById('resetBtn');
-    
-    const pixelSizeVal = document.getElementById('pixelSizeVal');
-    const colorNumVal = document.getElementById('colorNumVal');
-    const sizeInfo = document.getElementById('sizeInfo');
-    const colorCountInfo = document.getElementById('colorCountInfo');
+        // ---------- DOM 元素 ----------
+        const fileInput = document.getElementById('fileInput');
+        const uploadArea = document.getElementById('uploadArea');
+        const canvas = document.getElementById('pixelCanvas');
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        
+        const pixelSizeSlider = document.getElementById('pixelSize');
+        const colorNumSlider = document.getElementById('colorNum');
+        const noiseSlider = document.getElementById('noiseStrength');
+        const outlineCheck = document.getElementById('outlineCheck');
+        const ditherCheck = document.getElementById('ditherCheck');
+        const applyBtn = document.getElementById('applyBtn');
+        const exportImageBtn = document.getElementById('exportImageBtn');
+        
+        const pixelSizeVal = document.getElementById('pixelSizeVal');
+        const colorNumVal = document.getElementById('colorNumVal');
+        const noiseVal = document.getElementById('noiseVal');
+        const sizeInfo = document.getElementById('sizeInfo');
+        const colorCountInfo = document.getElementById('colorCountInfo');
+        
+        const colorListContainer = document.getElementById('colorListContainer');
+        const addColorBtn = document.getElementById('addColorBtn');
+        const resetPaletteBtn = document.getElementById('resetPaletteBtn');
+        const savePresetBtn = document.getElementById('savePresetBtn');
+        const loadPresetBtn = document.getElementById('loadPresetBtn');
+        const exportPresetBtn = document.getElementById('exportPresetBtn');
+        const importPresetBtn = document.getElementById('importPresetBtn');
+        const presetFileInput = document.getElementById('presetFileInput');
 
-    // ---------- 状态 ----------
-    let originalImage = null;
-    let currentPixels = null;
-    
-    // 调色板定义 - 新增泰拉瑞亚风格 (基于常见块/武器色彩提取)
-    const PALETTES = {
-      terraria: [ // 泰拉瑞亚风格 - 浓郁、高对比
-        [255,255,255],[0,0,0],[248,56,0],[255,153,0],[252,232,0],[0,184,0],[0,168,232],
-        [0,84,200],[120,48,200],[248,120,200],[248,200,160],[160,84,0],[104,68,252],
-        [60,188,252],[120,200,120],[200,120,80],[30,120,90],[140,70,40],[200,60,80],
-        [80,40,20],[180,100,140],[220,200,100],[90,80,150],[40,100,170],[180,60,20]
-      ],
-      bright: [
-        [255,255,255],[0,0,0],[248,56,0],[255,153,0],[252,232,0],[0,184,0],[0,168,232],
-        [0,84,200],[120,48,200],[248,120,200],[248,200,160],[160,84,0],[104,68,252],
-        [60,188,252],[120,200,120],[200,120,80]
-      ],
-      retro: [  // 经典16色
-        [0,0,0],[29,43,83],[126,37,83],[0,135,81],[171,82,54],[95,87,79],[194,195,199],
-        [255,241,232],[255,0,77],[255,163,0],[255,236,39],[0,228,54],[41,173,255],
-        [131,118,156],[255,119,168],[255,204,170]
-      ],
-      mono: [
-        [255,255,255],[0,0,0],[64,64,64],[128,128,128],[192,192,192],[32,32,32],
-        [96,96,96],[160,160,160],[224,224,224],[16,16,16]
-      ]
-    };
+        // ---------- 全局状态 ----------
+        let originalImage = null;
+        let currentPalette = [];           // 当前使用的调色板 (RGB数组)
+        
+        // 默认调色板 (明亮风格)
+        const DEFAULT_PALETTE = [
+            [255,255,255], [0,0,0], [248,56,0], [255,153,0], [252,232,0], [0,184,0], [0,168,232],
+            [0,84,200], [120,48,200], [248,120,200], [248,200,160], [160,84,0], [104,68,252],
+            [60,188,252], [120,200,120], [200,120,80]
+        ];
 
-    // 颜色距离
-    function colorDistance(r1,g1,b1, r2,g2,b2) {
-      const dr = r1 - r2, dg = g1 - g2, db = b1 - b2;
-      return dr*dr + dg*dg + db*db;
-    }
-
-    function findClosestColor(r, g, b, palette) {
-      let minDist = Infinity;
-      let closest = palette[0];
-      for (const col of palette) {
-        const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
-        if (dist < minDist) {
-          minDist = dist;
-          closest = col;
+        // ---------- 辅助函数：颜色距离 ----------
+        function colorDistance(r1,g1,b1, r2,g2,b2) {
+            const dr = r1 - r2, dg = g1 - g2, db = b1 - b2;
+            return dr*dr + dg*dg + db*db;
         }
-      }
-      return closest;
-    }
 
-    function applyPalette(imageData, palette) {
-      const data = imageData.data;
-      const newData = new Uint8ClampedArray(data.length);
-      for (let i = 0; i < data.length; i+=4) {
-        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
-        if (a < 128) {
-          newData[i]=255; newData[i+1]=255; newData[i+2]=255; newData[i+3]=0;
-          continue;
-        }
-        const [nr, ng, nb] = findClosestColor(r, g, b, palette);
-        newData[i]=nr; newData[i+1]=ng; newData[i+2]=nb; newData[i+3]=255;
-      }
-      return new ImageData(newData, imageData.width, imageData.height);
-    }
-
-    // 新增：添加杂色（Noise）——泰拉瑞亚纹理感的关键
-    function addNoise(imageData, intensity = 0.15) {
-      const data = imageData.data;
-      const newData = new Uint8ClampedArray(data.length);
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
-        if (a === 0) {
-          newData[i]=r; newData[i+1]=g; newData[i+2]=b; newData[i+3]=a;
-          continue;
-        }
-        // 添加随机扰动，模仿手绘感
-        const noiseVal = (Math.random() - 0.5) * intensity * 255;
-        newData[i] = Math.min(255, Math.max(0, r + noiseVal));
-        newData[i+1] = Math.min(255, Math.max(0, g + noiseVal));
-        newData[i+2] = Math.min(255, Math.max(0, b + noiseVal));
-        newData[i+3] = a;
-      }
-      return new ImageData(newData, imageData.width, imageData.height);
-    }
-
-    // 新增：简单的有序抖动 (Ordered Dithering) 模拟复古过渡
-    function applyOrderedDither(imageData, palette) {
-      const data = imageData.data;
-      const w = imageData.width;
-      const h = imageData.height;
-      const newData = new Uint8ClampedArray(data.length);
-      
-      // 4x4 Bayer 矩阵
-      const bayerMatrix = [
-        [0, 8, 2, 10],
-        [12, 4, 14, 6],
-        [3, 11, 1, 9],
-        [15, 7, 13, 5]
-      ].map(row => row.map(v => (v + 0.5) / 16 - 0.5));
-      
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          const idx = (y * w + x) * 4;
-          const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
-          if (a < 128) {
-            newData[idx]=255; newData[idx+1]=255; newData[idx+2]=255; newData[idx+3]=0;
-            continue;
-          }
-          
-          const threshold = bayerMatrix[y % 4][x % 4] * 60; // 阈值调节
-          let dr = r, dg = g, db = b;
-          
-          // 找到最接近的两个颜色，根据阈值抖动
-          let closest = findClosestColor(r, g, b, palette);
-          let secondClosest = closest;
-          let minDist = Infinity, secondDist = Infinity;
-          
-          for (const col of palette) {
-            const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
-            if (dist < minDist) {
-              secondDist = minDist;
-              secondClosest = closest;
-              minDist = dist;
-              closest = col;
-            } else if (dist < secondDist) {
-              secondDist = dist;
-              secondClosest = col;
+        function findClosestColor(r, g, b, palette) {
+            if (!palette.length) return [r,g,b];
+            let minDist = Infinity;
+            let closest = palette[0];
+            for (const col of palette) {
+                const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
+                if (dist < minDist) {
+                    minDist = dist;
+                    closest = col;
+                }
             }
-          }
-          
-          // 如果两个颜色非常接近，直接取最近
-          if (secondDist - minDist > 3000 || secondDist === Infinity) {
-            newData[idx]=closest[0]; newData[idx+1]=closest[1]; newData[idx+2]=closest[2];
-          } else {
-            // 抖动决定用哪个颜色
-            const mix = threshold > 0 ? (minDist / (minDist + secondDist)) : 0.5;
-            const useSecond = (Math.random() < mix);
-            const finalCol = useSecond ? secondClosest : closest;
-            newData[idx]=finalCol[0]; newData[idx+1]=finalCol[1]; newData[idx+2]=finalCol[2];
-          }
-          newData[idx+3] = 255;
+            return closest;
         }
-      }
-      return new ImageData(newData, w, h);
-    }
 
-    function addOutline(imageData) {
-      const { width, height, data } = imageData;
-      const newData = new Uint8ClampedArray(data.length);
-      const threshold = 30;
-      for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-          const idx = (y * width + x) * 4;
-          const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
-          let isEdge = false;
-          if (x > 0) {
-            const left = ((y*width + (x-1))*4);
-            if (Math.abs(r - data[left]) + Math.abs(g - data[left+1]) + Math.abs(b - data[left+2]) > threshold) isEdge = true;
-          }
-          if (x < width-1) {
-            const right = ((y*width + (x+1))*4);
-            if (Math.abs(r - data[right]) + Math.abs(g - data[right+1]) + Math.abs(b - data[right+2]) > threshold) isEdge = true;
-          }
-          if (y > 0) {
-            const up = (((y-1)*width + x)*4);
-            if (Math.abs(r - data[up]) + Math.abs(g - data[up+1]) + Math.abs(b - data[up+2]) > threshold) isEdge = true;
-          }
-          if (y < height-1) {
-            const down = (((y+1)*width + x)*4);
-            if (Math.abs(r - data[down]) + Math.abs(g - data[down+1]) + Math.abs(b - data[down+2]) > threshold) isEdge = true;
-          }
-          if (isEdge) {
-            newData[idx] = 0; newData[idx+1]=0; newData[idx+2]=0; newData[idx+3]=255;
-          } else {
-            newData[idx]=r; newData[idx+1]=g; newData[idx+2]=b; newData[idx+3]=a;
-          }
+        // 应用调色板
+        function applyPalette(imageData, palette) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data.length);
+            for (let i = 0; i < data.length; i+=4) {
+                const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                if (a < 128) {
+                    newData[i]=255; newData[i+1]=255; newData[i+2]=255; newData[i+3]=0;
+                    continue;
+                }
+                const [nr, ng, nb] = findClosestColor(r, g, b, palette);
+                newData[i]=nr; newData[i+1]=ng; newData[i+2]=nb; newData[i+3]=255;
+            }
+            return new ImageData(newData, imageData.width, imageData.height);
         }
-      }
-      return new ImageData(newData, width, height);
-    }
 
-    // ---------- 核心处理 ----------
-    function processImage() {
-      if (!originalImage) {
-        alert('请先上传图片');
-        return;
-      }
-
-      const pixelSize = parseInt(pixelSizeSlider.value);
-      const maxColors = parseInt(colorNumSlider.value);
-      const paletteKey = paletteSelect.value;
-      const useNoise = noiseCheck.checked;
-      const useDither = ditherCheck.checked;
-      const useOutline = outlineCheck.checked;
-      
-      pixelSizeVal.textContent = pixelSize;
-      colorNumVal.textContent = maxColors;
-
-      const imgW = originalImage.width;
-      const imgH = originalImage.height;
-      
-      let smallW = Math.max(1, Math.floor(imgW / pixelSize));
-      let smallH = Math.max(1, Math.floor(imgH / pixelSize));
-      if (smallW < 8) smallW = 8;
-      if (smallH < 8) smallH = 8;
-      
-      const offCanvas = document.createElement('canvas');
-      offCanvas.width = smallW;
-      offCanvas.height = smallH;
-      const offCtx = offCanvas.getContext('2d');
-      offCtx.imageSmoothingEnabled = false; // 保持像素感
-      offCtx.drawImage(originalImage, 0, 0, smallW, smallH);
-      
-      let smallImageData = offCtx.getImageData(0, 0, smallW, smallH);
-      
-      // 获取调色板并截取
-      let palette = PALETTES[paletteKey];
-      if (maxColors < palette.length) {
-        palette = palette.slice(0, maxColors);
-      }
-      
-      // 根据选项应用效果
-      if (useDither) {
-        smallImageData = applyOrderedDither(smallImageData, palette);
-      } else {
-        smallImageData = applyPalette(smallImageData, palette);
-      }
-      
-      if (useNoise) {
-        smallImageData = addNoise(smallImageData, 0.12);
-      }
-      
-      if (useOutline) {
-        smallImageData = addOutline(smallImageData);
-      }
-      
-      const displayW = smallW * pixelSize;
-      const displayH = smallH * pixelSize;
-      canvas.width = displayW;
-      canvas.height = displayH;
-      
-      const tempCanvas = document.createElement('canvas');
-      tempCanvas.width = smallW;
-      tempCanvas.height = smallH;
-      tempCanvas.getContext('2d').putImageData(smallImageData, 0, 0);
-      
-      ctx.imageSmoothingEnabled = false;
-      ctx.clearRect(0, 0, displayW, displayH);
-      ctx.drawImage(tempCanvas, 0, 0, displayW, displayH);
-      
-      currentPixels = ctx.getImageData(0, 0, displayW, displayH);
-      sizeInfo.textContent = `${displayW} x ${displayH}`;
-      
-      const colorSet = new Set();
-      const data = currentPixels.data;
-      for (let i=0; i<data.length; i+=4) {
-        if (data[i+3] > 0) {
-          colorSet.add(`${data[i]},${data[i+1]},${data[i+2]}`);
+        // 添加杂色
+        function addNoise(imageData, intensity) {
+            const data = imageData.data;
+            const newData = new Uint8ClampedArray(data.length);
+            for (let i = 0; i < data.length; i+=4) {
+                const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+                if (a === 0) {
+                    newData[i]=r; newData[i+1]=g; newData[i+2]=b; newData[i+3]=a;
+                    continue;
+                }
+                const noiseVal = (Math.random() - 0.5) * intensity * 255;
+                newData[i] = Math.min(255, Math.max(0, r + noiseVal));
+                newData[i+1] = Math.min(255, Math.max(0, g + noiseVal));
+                newData[i+2] = Math.min(255, Math.max(0, b + noiseVal));
+                newData[i+3] = a;
+            }
+            return new ImageData(newData, imageData.width, imageData.height);
         }
-      }
-      colorCountInfo.textContent = `颜色数: ${colorSet.size}`;
-    }
 
-    // ---------- 事件绑定 ----------
-    function handleImageUpload(file) {
-      if (!file.type.startsWith('image/')) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          originalImage = img;
-          processImage();
-        };
-        img.src = e.target.result;
-      };
-      reader.readAsDataURL(file);
-    }
+        // 有序抖动
+        function applyOrderedDither(imageData, palette) {
+            const data = imageData.data;
+            const w = imageData.width, h = imageData.height;
+            const newData = new Uint8ClampedArray(data.length);
+            const bayerMatrix = [
+                [0, 8, 2, 10],
+                [12, 4, 14, 6],
+                [3, 11, 1, 9],
+                [15, 7, 13, 5]
+            ].map(row => row.map(v => (v + 0.5) / 16 - 0.5));
+            
+            for (let y = 0; y < h; y++) {
+                for (let x = 0; x < w; x++) {
+                    const idx = (y * w + x) * 4;
+                    const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
+                    if (a < 128) {
+                        newData[idx]=255; newData[idx+1]=255; newData[idx+2]=255; newData[idx+3]=0;
+                        continue;
+                    }
+                    const threshold = bayerMatrix[y%4][x%4] * 70;
+                    let closest = findClosestColor(r, g, b, palette);
+                    let secondClosest = closest;
+                    let minDist = Infinity, secondDist = Infinity;
+                    for (const col of palette) {
+                        const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
+                        if (dist < minDist) {
+                            secondDist = minDist;
+                            secondClosest = closest;
+                            minDist = dist;
+                            closest = col;
+                        } else if (dist < secondDist) {
+                            secondDist = dist;
+                            secondClosest = col;
+                        }
+                    }
+                    if (secondDist - minDist > 3000) {
+                        newData[idx]=closest[0]; newData[idx+1]=closest[1]; newData[idx+2]=closest[2];
+                    } else {
+                        const useSecond = (Math.random() < 0.5);
+                        const finalCol = useSecond ? secondClosest : closest;
+                        newData[idx]=finalCol[0]; newData[idx+1]=finalCol[1]; newData[idx+2]=finalCol[2];
+                    }
+                    newData[idx+3] = 255;
+                }
+            }
+            return new ImageData(newData, w, h);
+        }
 
-    fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) handleImageUpload(e.target.files[0]);
-    });
+        // 描边
+        function addOutline(imageData) {
+            const { width, height, data } = imageData;
+            const newData = new Uint8ClampedArray(data.length);
+            const threshold = 30;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
+                    let isEdge = false;
+                    if (x>0) { const left=((y*width+x-1)*4); if(Math.abs(r-data[left])+Math.abs(g-data[left+1])+Math.abs(b-data[left+2])>threshold) isEdge=true; }
+                    if (x<width-1) { const right=((y*width+x+1)*4); if(Math.abs(r-data[right])+Math.abs(g-data[right+1])+Math.abs(b-data[right+2])>threshold) isEdge=true; }
+                    if (y>0) { const up=(((y-1)*width+x)*4); if(Math.abs(r-data[up])+Math.abs(g-data[up+1])+Math.abs(b-data[up+2])>threshold) isEdge=true; }
+                    if (y<height-1) { const down=(((y+1)*width+x)*4); if(Math.abs(r-data[down])+Math.abs(g-data[down+1])+Math.abs(b-data[down+2])>threshold) isEdge=true; }
+                    if (isEdge) {
+                        newData[idx]=0; newData[idx+1]=0; newData[idx+2]=0; newData[idx+3]=255;
+                    } else {
+                        newData[idx]=r; newData[idx+1]=g; newData[idx+2]=b; newData[idx+3]=a;
+                    }
+                }
+            }
+            return new ImageData(newData, width, height);
+        }
 
-    uploadArea.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      uploadArea.style.background = '#5f6c7c';
-    });
-    uploadArea.addEventListener('dragleave', () => {
-      uploadArea.style.background = '#4b5663';
-    });
-    uploadArea.addEventListener('drop', (e) => {
-      e.preventDefault();
-      uploadArea.style.background = '#4b5663';
-      const file = e.dataTransfer.files[0];
-      if (file) handleImageUpload(file);
-    });
-    
-    uploadArea.addEventListener('click', () => fileInput.click());
+        // 核心处理
+        function processImage() {
+            if (!originalImage) { alert('请先上传图片'); return; }
+            
+            const pixelSize = parseInt(pixelSizeSlider.value);
+            const maxColors = parseInt(colorNumSlider.value);
+            const noiseIntensity = parseFloat(noiseSlider.value);
+            const useOutline = outlineCheck.checked;
+            const useDither = ditherCheck.checked;
+            
+            pixelSizeVal.textContent = pixelSize;
+            colorNumVal.textContent = maxColors;
+            noiseVal.textContent = noiseIntensity.toFixed(2);
+            
+            let palette = currentPalette.slice(0, maxColors);
+            if (palette.length === 0) palette = [[255,255,255],[0,0,0]];
+            
+            const imgW = originalImage.width, imgH = originalImage.height;
+            let smallW = Math.max(1, Math.floor(imgW / pixelSize));
+            let smallH = Math.max(1, Math.floor(imgH / pixelSize));
+            if (smallW < 8) smallW = 8; if (smallH < 8) smallH = 8;
+            
+            const offCanvas = document.createElement('canvas');
+            offCanvas.width = smallW; offCanvas.height = smallH;
+            const offCtx = offCanvas.getContext('2d');
+            offCtx.imageSmoothingEnabled = false;
+            offCtx.drawImage(originalImage, 0, 0, smallW, smallH);
+            let smallImageData = offCtx.getImageData(0, 0, smallW, smallH);
+            
+            if (useDither) {
+                smallImageData = applyOrderedDither(smallImageData, palette);
+            } else {
+                smallImageData = applyPalette(smallImageData, palette);
+            }
+            if (noiseIntensity > 0) {
+                smallImageData = addNoise(smallImageData, noiseIntensity);
+            }
+            if (useOutline) {
+                smallImageData = addOutline(smallImageData);
+            }
+            
+            const displayW = smallW * pixelSize, displayH = smallH * pixelSize;
+            canvas.width = displayW; canvas.height = displayH;
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = smallW; tempCanvas.height = smallH;
+            tempCanvas.getContext('2d').putImageData(smallImageData, 0, 0);
+            ctx.imageSmoothingEnabled = false;
+            ctx.clearRect(0, 0, displayW, displayH);
+            ctx.drawImage(tempCanvas, 0, 0, displayW, displayH);
+            
+            sizeInfo.textContent = `${displayW} x ${displayH}`;
+            const colorSet = new Set();
+            const imgData = ctx.getImageData(0,0,displayW,displayH);
+            for (let i=0; i<imgData.data.length; i+=4) {
+                if (imgData.data[i+3]>0) colorSet.add(`${imgData.data[i]},${imgData.data[i+1]},${imgData.data[i+2]}`);
+            }
+            colorCountInfo.textContent = `颜色数: ${colorSet.size}`;
+        }
 
-    pixelSizeSlider.addEventListener('input', () => {
-      pixelSizeVal.textContent = pixelSizeSlider.value;
-      processImage();
-    });
-    colorNumSlider.addEventListener('input', () => {
-      colorNumVal.textContent = colorNumSlider.value;
-      processImage();
-    });
-    paletteSelect.addEventListener('change', processImage);
-    noiseCheck.addEventListener('change', processImage);
-    ditherCheck.addEventListener('change', processImage);
-    outlineCheck.addEventListener('change', processImage);
-    applyBtn.addEventListener('click', processImage);
+        // ---------- 调色板 UI 渲染 ----------
+        function renderPalette() {
+            let html = '';
+            currentPalette.forEach((color, index) => {
+                const hex = '#' + color.map(c => c.toString(16).padStart(2,'0')).join('');
+                html += `<div class="color-item">
+                    <div class="color-preview" style="background: ${hex};" data-index="${index}"></div>
+                    <span style="font-family:monospace; color:#ddd;">${hex.toUpperCase()}</span>
+                    <button class="remove-color" data-index="${index}">✖</button>
+                    <input type="color" class="hidden-color-input" data-index="${index}" value="${hex}" style="display:none;">
+                </div>`;
+            });
+            colorListContainer.innerHTML = html || '<p style="color:#aaa;">暂无颜色，请添加</p>';
+            
+            document.querySelectorAll('.color-preview').forEach(el => {
+                el.addEventListener('click', (e) => {
+                    const idx = el.dataset.index;
+                    const input = document.querySelector(`.hidden-color-input[data-index="${idx}"]`);
+                    if (input) input.click();
+                });
+            });
+            document.querySelectorAll('.hidden-color-input').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const idx = input.dataset.index;
+                    const hex = e.target.value;
+                    const r = parseInt(hex.slice(1,3),16);
+                    const g = parseInt(hex.slice(3,5),16);
+                    const b = parseInt(hex.slice(5,7),16);
+                    currentPalette[idx] = [r,g,b];
+                    renderPalette();
+                });
+            });
+            document.querySelectorAll('.remove-color').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = btn.dataset.index;
+                    currentPalette.splice(idx, 1);
+                    renderPalette();
+                });
+            });
+        }
 
-    exportBtn.addEventListener('click', () => {
-      if (!currentPixels) {
-        alert('没有可导出的像素画');
-        return;
-      }
-      const link = document.createElement('a');
-      link.download = `terraria_pixel_${Date.now()}.png`;
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    });
+        function resetPaletteToDefault() {
+            currentPalette = DEFAULT_PALETTE.map(c => [...c]);
+            renderPalette();
+        }
 
-    resetBtn.addEventListener('click', () => {
-      originalImage = null;
-      currentPixels = null;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      canvas.width = 400; canvas.height = 400;
-      ctx.fillStyle = '#2a323c'; ctx.fillRect(0,0,400,400);
-      ctx.fillStyle = '#c9a87c';
-      ctx.font = 'bold 20px monospace';
-      ctx.fillText('等待上传', 120, 220);
-      sizeInfo.textContent = '400x400';
-      colorCountInfo.textContent = '颜色数: —';
-      fileInput.value = '';
-    });
+        // 初始化调色板
+        currentPalette = DEFAULT_PALETTE.map(c => [...c]);
+        renderPalette();
 
-    resetBtn.click();
+        // 添加颜色
+        addColorBtn.addEventListener('click', () => {
+            if (currentPalette.length >= 32) { alert('最多支持32种颜色'); return; }
+            currentPalette.push([128,128,128]);
+            renderPalette();
+        });
+        resetPaletteBtn.addEventListener('click', resetPaletteToDefault);
 
-    // 加载默认演示图
-    (function loadDemo() {
-      const demoImg = new Image();
-      demoImg.crossOrigin = 'Anonymous';
-      demoImg.onload = () => {
-        originalImage = demoImg;
-        processImage();
-      };
-      demoImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23a56b3f'/%3E%3Ccircle cx='35' cy='35' r='18' fill='%23f0e6d2'/%3E%3Ccircle cx='65' cy='35' r='18' fill='%23f0e6d2'/%3E%3Ccircle cx='35' cy='35' r='8' fill='%23000'/%3E%3Ccircle cx='65' cy='35' r='8' fill='%23000'/%3E%3Cpath d='M30 60 Q50 80,70 60' stroke='%23c04040' stroke-width='6' fill='none' stroke-linecap='round' /%3E%3C/svg%3E";
+        // 保存/加载预设 (localStorage)
+        function getCurrentConfig() {
+            return {
+                pixelSize: pixelSizeSlider.value,
+                colorNum: colorNumSlider.value,
+                noise: noiseSlider.value,
+                outline: outlineCheck.checked,
+                dither: ditherCheck.checked,
+                palette: currentPalette
+            };
+        }
+        function applyConfig(config) {
+            pixelSizeSlider.value = config.pixelSize || 8;
+            colorNumSlider.value = config.colorNum || 16;
+            noiseSlider.value = config.noise || 0.08;
+            outlineCheck.checked = config.outline !== false;
+            ditherCheck.checked = config.dither || false;
+            currentPalette = config.palette || DEFAULT_PALETTE.map(c=>[...c]);
+            renderPalette();
+            processImage();
+        }
+
+        savePresetBtn.addEventListener('click', () => {
+            const config = getCurrentConfig();
+            localStorage.setItem('pixelStylePreset', JSON.stringify(config));
+            alert('配置已保存到浏览器');
+        });
+        loadPresetBtn.addEventListener('click', () => {
+            const saved = localStorage.getItem('pixelStylePreset');
+            if (saved) {
+                applyConfig(JSON.parse(saved));
+                alert('配置已加载');
+            } else {
+                alert('没有保存的配置');
+            }
+        });
+        exportPresetBtn.addEventListener('click', () => {
+            const config = getCurrentConfig();
+            const blob = new Blob([JSON.stringify(config, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = 'pixel_style_preset.json'; a.click();
+            URL.revokeObjectURL(url);
+        });
+        importPresetBtn.addEventListener('click', () => presetFileInput.click());
+        presetFileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const config = JSON.parse(ev.target.result);
+                    applyConfig(config);
+                    alert('配置文件导入成功');
+                } catch(ex) { alert('无效的配置文件'); }
+                presetFileInput.value = '';
+            };
+            reader.readAsText(file);
+        });
+
+        // 图片上传
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => { originalImage = img; processImage(); };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+        fileInput.addEventListener('change', (e) => { if(e.target.files[0]) handleImageUpload(e.target.files[0]); });
+        uploadArea.addEventListener('dragover', e=>{e.preventDefault(); uploadArea.style.background='#4a5768';});
+        uploadArea.addEventListener('dragleave', ()=> uploadArea.style.background='#3a4553');
+        uploadArea.addEventListener('drop', e=>{
+            e.preventDefault(); uploadArea.style.background='#3a4553';
+            const file = e.dataTransfer.files[0];
+            if(file) handleImageUpload(file);
+        });
+        uploadArea.addEventListener('click', ()=> fileInput.click());
+
+        // 应用按钮
+        applyBtn.addEventListener('click', processImage);
+        
+        // 导出图片
+        exportImageBtn.addEventListener('click', ()=>{
+            const link = document.createElement('a');
+            link.download = `pixel_${Date.now()}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // 实时更新显示值
+        pixelSizeSlider.addEventListener('input', ()=> pixelSizeVal.textContent = pixelSizeSlider.value);
+        colorNumSlider.addEventListener('input', ()=> colorNumVal.textContent = colorNumSlider.value);
+        noiseSlider.addEventListener('input', ()=> noiseVal.textContent = parseFloat(noiseSlider.value).toFixed(2));
+        
+        // 加载演示图
+        (function loadDemo(){
+            const demo = new Image();
+            demo.onload = ()=>{ originalImage = demo; processImage(); };
+            demo.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f0c0a0'/%3E%3Ccircle cx='30' cy='35' r='15' fill='%23fff'/%3E%3Ccircle cx='70' cy='35' r='15' fill='%23fff'/%3E%3Ccircle cx='30' cy='35' r='6' fill='%23000'/%3E%3Ccircle cx='70' cy='35' r='6' fill='%23000'/%3E%3Cpath d='M40 65 Q50 85,60 65' stroke='%23c44' stroke-width='5' fill='none'/%3E%3C/svg%3E";
+        })();
     })();
-
-  })();
 </script>
 </body>
 </html>
