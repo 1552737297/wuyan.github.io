@@ -1,331 +1,620 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>萌宠管家-终极稳定版(Chrome146)</title>
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: system-ui,"微软雅黑",sans-serif;
-}
-body {
-  background: #fdf6f8;
-  padding-bottom: 80px;
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>🎮 Q版像素风格转换器 · 实时预览</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* 导航：强制置顶、最高层级、绝对可点击 */
-#mainNav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 52px;
-  background: #fff;
-  display: flex;
-  z-index: 9999999;
-  pointer-events: auto !important;
-  -webkit-pointer-events: auto !important;
-  box-shadow: 0 1px 6px #eee;
-}
-.navBtn {
-  flex: 1;
-  line-height: 52px;
-  text-align: center;
-  font-size: 15px;
-  color: #666;
-  cursor: pointer;
-  user-select: none;
-}
-.navBtn.active {
-  color: #ff5c8d;
-  border-bottom: 3px solid #ff5c8d;
-  font-weight: bold;
-}
+    body {
+      background: linear-gradient(145deg, #1a1e2c 0%, #2a2f44 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Segoe UI', 'Press Start 2P', 'Courier New', monospace;
+      padding: 20px;
+    }
 
-.main {
-  margin-top: 58px;
-  padding: 15px;
-}
-.page {
-  display: none;
-}
-.page.show {
-  display: block;
-}
+    .pixel-card {
+      max-width: 1100px;
+      width: 100%;
+      background: #f0e9de;
+      border-radius: 32px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 2px #fff3e6;
+      padding: 24px;
+      border: 6px solid #b59d7e;
+    }
 
-.banner{width:100%;height:150px;border-radius:16px;background:linear-gradient(135deg,#ff9aaa,#ffccd5);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:bold;margin-bottom:20px;}
-.form-box{background:#fff;border-radius:14px;padding:18px;margin-bottom:15px;box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-.form-item{margin-bottom:14px;}
-.form-item label{display:block;font-size:14px;color:#555;margin-bottom:5px;}
-.form-item input,.form-item select,.form-item textarea{width:100%;padding:11px;border:1px solid #eee;border-radius:10px;outline:none;font-size:14px;}
-.btn{width:100%;background:linear-gradient(90deg,#ff5c8d,#ff7ba7);color:#fff;border:none;padding:12px;border-radius:10px;font-size:16px;cursor:pointer;margin-top:8px;}
-.small-btn{background:#ccc;color:#333;border:none;padding:6px 12px;border-radius:6px;cursor:pointer;}
-.service-item{padding:10px;border:1px solid #eee;border-radius:8px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
-.order-item{background:#fff;padding:12px;border-radius:10px;margin-bottom:10px;border-left:4px solid #ff5c8d;}
-.post-item{background:#fff;padding:15px;border-radius:12px;margin-bottom:12px;}
-.pop{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:99999999;}
-.pop-box{background:#fff;width:80%;border-radius:16px;padding:25px;text-align:center;}
-</style>
+    h1 {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 2.4rem;
+      font-weight: 800;
+      color: #2d281c;
+      text-shadow: 4px 4px 0 #d4b68a;
+      letter-spacing: 2px;
+      margin-bottom: 20px;
+      border-bottom: 4px dashed #8b7a62;
+      padding-bottom: 16px;
+    }
+
+    h1 i {
+      font-size: 2.8rem;
+    }
+
+    .upload-area {
+      background: #cfc1b2;
+      border-radius: 24px;
+      padding: 28px 20px;
+      text-align: center;
+      border: 3px dashed #5e4e3d;
+      margin-bottom: 24px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .upload-area:hover {
+      background: #d9cdbf;
+      border-color: #3a2e22;
+    }
+
+    .upload-area input {
+      display: none;
+    }
+
+    .upload-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .preview-panel {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .canvas-container {
+      flex: 2;
+      min-width: 320px;
+      background: #5d5346;
+      padding: 16px;
+      border-radius: 24px;
+      box-shadow: inset 0 0 0 4px #2f281e, 0 8px 0 #3a2e22;
+    }
+
+    #pixelCanvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      image-rendering: crisp-edges;          /* 像素风 */
+      image-rendering: pixelated;
+      border-radius: 12px;
+      box-shadow: 0 0 0 3px #aa947c;
+      background: #fff;
+    }
+
+    .controls {
+      flex: 1.2;
+      min-width: 260px;
+      background: #e3d5c4;
+      border-radius: 24px;
+      padding: 22px 20px;
+      box-shadow: inset 0 0 0 2px #fef7e9, 0 8px 0 #7e6e5a;
+      border: 2px solid #9c8a74;
+    }
+
+    .control-group {
+      margin-bottom: 24px;
+    }
+
+    .control-group label {
+      display: flex;
+      justify-content: space-between;
+      font-weight: bold;
+      color: #2d281c;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      margin: 8px 0;
+      -webkit-appearance: none;
+      background: transparent;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 12px;
+      background: #5e5242;
+      border-radius: 12px;
+      box-shadow: inset 0 1px 4px #1f1a14;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      height: 26px;
+      width: 26px;
+      border-radius: 6px;
+      background: #f3c26b;
+      margin-top: -7px;
+      border: 2px solid #2f281e;
+      box-shadow: 0 3px 0 #8b6f4c;
+      cursor: pointer;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 16px;
+      background: #fbf3e0;
+      border: 3px solid #5e4e3d;
+      border-radius: 20px;
+      font-weight: bold;
+      color: #2d281c;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05), 0 4px 0 #7b6955;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .checkbox-item input {
+      width: 24px;
+      height: 24px;
+      accent-color: #b87c4d;
+      transform: scale(1.2);
+    }
+
+    .btn {
+      background: #d6a158;
+      border: none;
+      border-radius: 48px;
+      padding: 16px 20px;
+      font-weight: bold;
+      font-size: 1.2rem;
+      color: #1e1a14;
+      box-shadow: 0 6px 0 #7a5c3a, 0 2px 8px rgba(0,0,0,0.2);
+      border: 2px solid #fbeec9;
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.05s ease-in;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #7a5c3a, 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .btn.export {
+      background: #4f7a5c;
+      color: #f0f0d8;
+      box-shadow: 0 6px 0 #2f4a38;
+      border-color: #bdd6b5;
+      margin-top: 12px;
+    }
+
+    .value-display {
+      font-family: 'Courier New', monospace;
+      background: #2f2a22;
+      color: #f0ddaa;
+      padding: 4px 12px;
+      border-radius: 30px;
+    }
+
+    .footer-note {
+      margin-top: 16px;
+      color: #4e3f2f;
+      text-align: center;
+      font-size: 0.8rem;
+    }
+  </style>
 </head>
 <body>
+<div class="pixel-card">
+  <h1>
+    <span>🕹️</span> Q·像素化
+    <span style="margin-left: auto; font-size: 1rem;">▼ 拖拽图片 or 点击上传</span>
+  </h1>
 
-<!-- 原生onclick直绑，Chrome146永远有效 -->
-<div id="mainNav">
-  <div class="navBtn active" onclick="showPage(0)">下单预约</div>
-  <div class="navBtn" onclick="showPage(1)">宠友社区</div>
-  <div class="navBtn" onclick="showPage(2)">商家后台</div>
-</div>
-
-<div class="main">
-  <!-- 预约页 -->
-  <div class="page show" id="page0">
-    <div class="banner">🐾 萌宠管家 上门贴心喂养</div>
-    <div class="form-box">
-      <h4>可选服务</h4>
-      <div id="serviceList"></div>
-    </div>
-    <div class="form-box">
-      <div class="form-item"><label>选择服务</label><select id="selService"></select></div>
-      <div class="form-item"><label>昵称</label><input id="uName"></div>
-      <div class="form-item"><label>手机号</label><input id="uPhone"></div>
-      <div class="form-item"><label>上门地址</label><input id="uAddr"></div>
-      <div class="form-item"><label>预约时间</label><input type="datetime-local" id="uTime"></div>
-      <div class="form-item"><label>宠物备注</label><textarea id="uNote" rows="3"></textarea></div>
-      <button class="btn" onclick="submitOrder()">提交预约</button>
-    </div>
+  <!-- 上传区域 -->
+  <div class="upload-area" id="uploadArea">
+    <div class="upload-icon">📁⬇️</div>
+    <div style="font-size: 1.2rem; font-weight: bold;">点击或拖拽图片至此</div>
+    <div style="margin-top: 8px; opacity: 0.8;">支持 PNG, JPG, GIF, WEBP</div>
+    <input type="file" id="fileInput" accept="image/*">
   </div>
 
-  <!-- 社区页 -->
-  <div class="page" id="page1">
-    <div class="banner">🐱 宠友交流社区</div>
-    <div class="form-box">
-      <div class="form-item"><label>发帖昵称</label><input id="pNick"></div>
-      <div class="form-item"><label>分享内容</label><textarea id="pText" rows="4"></textarea></div>
-      <button class="btn" onclick="addPost()">发布帖子</button>
+  <div class="preview-panel">
+    <!-- 画布区 -->
+    <div class="canvas-container">
+      <canvas id="pixelCanvas" width="400" height="400"></canvas>
+      <div style="display: flex; justify-content: space-between; margin-top: 12px; color: #efe0cd; padding: 0 4px;">
+        <span id="sizeInfo">400x400</span>
+        <span id="colorCountInfo">颜色数: —</span>
+      </div>
     </div>
-    <div id="postList"></div>
-  </div>
 
-  <!-- 商家后台 -->
-  <div class="page" id="page2">
-    <div class="banner">🔐 商家管理中心</div>
-    <div id="loginBox" class="form-box" style="text-align:center;">
-      <p>密码：123456</p >
-      <input type="password" id="adminPwd">
-      <br><br>
-      <button class="btn" onclick="adminLogin()">登录</button>
-    </div>
-    <div id="adminPanel" style="display:none;">
-      <div class="form-box">
-        <h4>修改服务价格</h4>
-        <div id="priceEdit"></div>
+    <!-- 控制区 -->
+    <div class="controls">
+      <div class="control-group">
+        <label>🔲 像素尺寸 <span class="value-display" id="pixelSizeVal">8</span></label>
+        <input type="range" id="pixelSize" min="2" max="32" value="8" step="1">
       </div>
-      <div class="form-box">
-        <h4>添加新服务</h4>
-        <div class="form-item"><label>服务名称</label><input id="newName"></div>
-        <div class="form-item"><label>价格(元)</label><input type="number" id="newPrice"></div>
-        <button class="btn" onclick="addNewService()">添加</button>
-      </div>
-      <div class="form-box">
-        <h4>全部订单</h4>
-        <div id="orderList"></div>
-      </div>
-    </div>
-  </div>
 
-  <!-- 弹窗 -->
-  <div class="pop" id="pop">
-    <div class="pop-box">
-      <h4 id="popText"></h4>
-      <br>
-      <button class="small-btn" onclick="closePop()">确定</button>
+      <div class="control-group">
+        <label>🎨 最大颜色数 <span class="value-display" id="colorNumVal">16</span></label>
+        <input type="range" id="colorNum" min="2" max="64" value="16" step="1">
+      </div>
+
+      <div class="control-group">
+        <label>🌈 调色板预设</label>
+        <select id="paletteSelect">
+          <option value="bright" selected>🌟 明亮卡通</option>
+          <option value="retro">📺 复古游戏 (DB16)</option>
+          <option value="mono">🎞️ 黑白漫画</option>
+        </select>
+      </div>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="outlineCheck" checked> 
+        <label style="margin-bottom:0;">✏️ 添加黑色描边 (更Q)</label>
+      </div>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="smoothCheck"> 
+        <label style="margin-bottom:0;">🌀 边缘柔化 (略微软化)</label>
+      </div>
+
+      <button class="btn" id="applyBtn">✨ 立即转换</button>
+      <button class="btn export" id="exportBtn">💾 导出像素画</button>
+      <div style="margin-top: 16px;">
+        <button class="btn" id="resetBtn" style="background:#7e8a7a; box-shadow:0 6px 0 #4f5a4b;">🔄 重置图片</button>
+      </div>
+      <div class="footer-note">
+        * 调整参数后自动预览
+      </div>
     </div>
   </div>
 </div>
 
 <script>
-// ========== 全局配置（本地存储） ==========
-function getServices() {
-  let data = localStorage.getItem("petServices");
-  if (!data) {
-    let init = [
-      { name: "喂猫铲屎换水", price: 29 },
-      { name: "小型犬遛狗陪伴", price: 39 },
-      { name: "多宠专人看护", price: 59 },
-      { name: "毛发清洁护理", price: 45 }
-    ];
-    localStorage.setItem("petServices", JSON.stringify(init));
-    return init;
-  }
-  return JSON.parse(data);
-}
-function saveServices(arr) {
-  localStorage.setItem("petServices", JSON.stringify(arr));
-}
+  (function(){
+    "use strict";
 
-// ========== 页面切换（原生直绑，永不失效） ==========
-function showPage(num) {
-  // 切换导航
-  let btns = document.querySelectorAll(".navBtn");
-  btns.forEach(b => b.classList.remove("active"));
-  btns[num].classList.add("active");
-  // 切换页面
-  let pages = document.querySelectorAll(".page");
-  pages.forEach(p => p.classList.remove("show"));
-  document.getElementById("page" + num).classList.add("show");
-  // 按需渲染
-  if (num === 0) renderServices();
-  if (num === 1) renderPosts();
-}
+    // ---------- DOM 元素 ----------
+    const fileInput = document.getElementById('fileInput');
+    const uploadArea = document.getElementById('uploadArea');
+    const canvas = document.getElementById('pixelCanvas');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
+    
+    const pixelSizeSlider = document.getElementById('pixelSize');
+    const colorNumSlider = document.getElementById('colorNum');
+    const paletteSelect = document.getElementById('paletteSelect');
+    const outlineCheck = document.getElementById('outlineCheck');
+    const smoothCheck = document.getElementById('smoothCheck');
+    const applyBtn = document.getElementById('applyBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    
+    const pixelSizeVal = document.getElementById('pixelSizeVal');
+    const colorNumVal = document.getElementById('colorNumVal');
+    const sizeInfo = document.getElementById('sizeInfo');
+    const colorCountInfo = document.getElementById('colorCountInfo');
 
-// ========== 服务渲染 ==========
-function renderServices() {
-  let list = getServices();
-  let html = "", opt = "";
-  list.forEach((s, i) => {
-    html += `<div class="service-item">${s.name} <span>¥${s.price}/次</span></div>`;
-    opt += `<option value="${i}">${s.name} ¥${s.price}</option>`;
-  });
-  document.getElementById("serviceList").innerHTML = html;
-  document.getElementById("selService").innerHTML = opt;
-}
+    // ---------- 状态 ----------
+    let originalImage = null;            // Image 对象
+    let currentPixels = null;            // 当前处理后的像素数据 { data, width, height }
+    
+    // 调色板定义
+    const PALETTES = {
+      bright: [
+        [255,255,255],[0,0,0],[248,56,0],[255,153,0],[252,232,0],[0,184,0],[0,168,232],
+        [0,84,200],[120,48,200],[248,120,200],[248,200,160],[160,84,0],[104,68,252],
+        [60,188,252],[120,200,120],[200,120,80]
+      ],
+      retro: [  // 经典16色 (近似)
+        [0,0,0],[29,43,83],[126,37,83],[0,135,81],[171,82,54],[95,87,79],[194,195,199],
+        [255,241,232],[255,0,77],[255,163,0],[255,236,39],[0,228,54],[41,173,255],
+        [131,118,156],[255,119,168],[255,204,170]
+      ],
+      mono: [
+        [255,255,255],[0,0,0],[64,64,64],[128,128,128],[192,192,192],[32,32,32],
+        [96,96,96],[160,160,160],[224,224,224],[16,16,16]
+      ]
+    };
 
-// ========== 商家价格编辑 ==========
-function renderPriceEdit() {
-  let list = getServices();
-  let html = "";
-  list.forEach((s, i) => {
-    html += `
-    <div class="form-item">
-      <label>${s.name}</label>
-      <input type="number" id="p_${i}" value="${s.price}">
-      <button class="small-btn" onclick="savePrice(${i})">保存</button>
-    </div>
-    `;
-  });
-  document.getElementById("priceEdit").innerHTML = html;
-}
-function savePrice(idx) {
-  let list = getServices();
-  let val = document.getElementById("p_" + idx).value;
-  if (!val || val <= 0) { alert("请输入正确价格"); return; }
-  list[idx].price = Number(val);
-  saveServices(list);
-  renderServices();
-  renderPriceEdit();
-  showPop("价格已保存");
-}
-function addNewService() {
-  let name = document.getElementById("newName").value.trim();
-  let price = document.getElementById("newPrice").value;
-  if (!name || !price || price <= 0) { alert("请填写完整"); return; }
-  let list = getServices();
-  list.push({ name, price: Number(price) });
-  saveServices(list);
-  document.getElementById("newName").value = "";
-  document.getElementById("newPrice").value = "";
-  renderServices();
-  renderPriceEdit();
-  showPop("新服务已添加");
-}
+    // ---------- 辅助函数：颜色距离 ----------
+    function colorDistance(r1,g1,b1, r2,g2,b2) {
+      const dr = r1 - r2, dg = g1 - g2, db = b1 - b2;
+      return dr*dr + dg*dg + db*db;
+    }
 
-// ========== 订单 ==========
-function getOrders() { return JSON.parse(localStorage.getItem("petOrders")) || []; }
-function saveOrders(arr) { localStorage.setItem("petOrders", JSON.stringify(arr)); }
-function submitOrder() {
-  let idx = document.getElementById("selService").value;
-  let s = getServices()[idx];
-  let name = uName.value.trim(), phone = uPhone.value.trim(), addr = uAddr.value.trim(), time = uTime.value;
-  if (!name || !phone || !addr || !time) { alert("请完善信息"); return; }
-  let order = {
-    id: Date.now(), name, phone, addr, service: s.name, price: s.price, time, note: uNote.value || "无", status: "待接单"
-  };
-  let orders = getOrders();
-  orders.unshift(order);
-  saveOrders(orders);
-  showPop("预约成功");
-  uName.value = ""; uPhone.value = ""; uAddr.value = ""; uNote.value = "";
-}
-function renderOrders() {
-  let list = getOrders();
-  let html = "";
-  if (list.length === 0) html = "<div style='padding:15px;text-align:center;color:#999;'>暂无订单</div>";
-  list.forEach(o => {
-    html += `
-    <div class="order-item">
-      <p>姓名：${o.name}</p >
-      <p>手机：${o.phone}</p >
-      <p>服务：${o.service} ¥${o.price}</p >
-      <p>地址：${o.addr}</p >
-      <p>时间：${o.time}</p >
-      <p>状态：${o.status}</p >
-    </div>
-    `;
-  });
-  document.getElementById("orderList").innerHTML = html;
-}
+    // 找到调色板中最接近的颜色
+    function findClosestColor(r, g, b, palette) {
+      let minDist = Infinity;
+      let closest = palette[0];
+      for (const col of palette) {
+        const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
+        if (dist < minDist) {
+          minDist = dist;
+          closest = col;
+        }
+      }
+      return closest;
+    }
 
-// ========== 社区帖子 ==========
-function getPosts() { return JSON.parse(localStorage.getItem("petPosts")) || []; }
-function savePosts(arr) { localStorage.setItem("petPosts", JSON.stringify(arr)); }
-function addPost() {
-  let nick = pNick.value.trim(), text = pText.value.trim();
-  if (!nick || !text) { alert("昵称和内容不能为空"); return; }
-  let post = { id: Date.now(), nick, text, like: 0 };
-  let posts = getPosts();
-  posts.unshift(post);
-  savePosts(posts);
-  pNick.value = ""; pText.value = "";
-  renderPosts();
-  showPop("发帖成功");
-}
-function renderPosts() {
-  let list = getPosts();
-  let html = "";
-  if (list.length === 0) html = "<div style='padding:15px;text-align:center;color:#999;'>暂无帖子</div>";
-  list.forEach(p => {
-    html += `
-    <div class="post-item">
-      <div><strong>${p.nick}</strong></div>
-      <div style="margin:8px 0;">${p.text}</div>
-      <div style="color:#ff5c8d">❤️点赞 ${p.like}</div>
-    </div>
-    `;
-  });
-  document.getElementById("postList").innerHTML = html;
-}
+    // 中位切分减少颜色 (快速但非精确，适合实时)
+    function reduceColorsWithPalette(imageData, maxColors, palette) {
+      const data = imageData.data;
+      const len = data.length;
+      // 如果已经有目标调色板，则直接映射
+      const newData = new Uint8ClampedArray(len);
+      for (let i = 0; i < len; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+        if (a < 128) {
+          newData[i] = 255; newData[i+1]=255; newData[i+2]=255; newData[i+3]=0;
+          continue;
+        }
+        const [nr, ng, nb] = findClosestColor(r, g, b, palette);
+        newData[i] = nr; newData[i+1] = ng; newData[i+2] = nb; newData[i+3] = 255;
+      }
+      return new ImageData(newData, imageData.width, imageData.height);
+    }
 
-// ========== 商家登录 ==========
-function adminLogin() {
-  if (adminPwd.value === "123456") {
-    document.getElementById("loginBox").style.display = "none";
-    document.getElementById("adminPanel").style.display = "block";
-    renderPriceEdit();
-    renderOrders();
-    showPop("登录成功");
-  } else {
-    alert("密码错误");
-  }
-}
+    // 简易颜色量化 (使用调色板)
+    function applyPalette(imageData, palette) {
+      const data = imageData.data;
+      const newData = new Uint8ClampedArray(data.length);
+      for (let i = 0; i < data.length; i+=4) {
+        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+        if (a < 128) {
+          newData[i]=255; newData[i+1]=255; newData[i+2]=255; newData[i+3]=0;
+          continue;
+        }
+        const [nr, ng, nb] = findClosestColor(r, g, b, palette);
+        newData[i]=nr; newData[i+1]=ng; newData[i+2]=nb; newData[i+3]=255;
+      }
+      return new ImageData(newData, imageData.width, imageData.height);
+    }
 
-// ========== 弹窗 ==========
-function showPop(text) {
-  document.getElementById("popText").innerText = text;
-  document.getElementById("pop").style.display = "flex";
-}
-function closePop() {
-  document.getElementById("pop").style.display = "none";
-}
+    // 添加黑色描边 (基于边缘检测)
+    function addOutline(imageData) {
+      const { width, height, data } = imageData;
+      const newData = new Uint8ClampedArray(data.length);
+      const threshold = 30;
+      
+      for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
+          const idx = (y * width + x) * 4;
+          const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
+          
+          // 检查上下左右是否有明显不同
+          let isEdge = false;
+          if (x > 0) {
+            const left = ((y*width + (x-1))*4);
+            if (Math.abs(r - data[left]) + Math.abs(g - data[left+1]) + Math.abs(b - data[left+2]) > threshold) isEdge = true;
+          }
+          if (x < width-1) {
+            const right = ((y*width + (x+1))*4);
+            if (Math.abs(r - data[right]) + Math.abs(g - data[right+1]) + Math.abs(b - data[right+2]) > threshold) isEdge = true;
+          }
+          if (y > 0) {
+            const up = (((y-1)*width + x)*4);
+            if (Math.abs(r - data[up]) + Math.abs(g - data[up+1]) + Math.abs(b - data[up+2]) > threshold) isEdge = true;
+          }
+          if (y < height-1) {
+            const down = (((y+1)*width + x)*4);
+            if (Math.abs(r - data[down]) + Math.abs(g - data[down+1]) + Math.abs(b - data[down+2]) > threshold) isEdge = true;
+          }
+          
+          if (isEdge) {
+            newData[idx] = 0; newData[idx+1]=0; newData[idx+2]=0; newData[idx+3]=255;
+          } else {
+            newData[idx]=r; newData[idx+1]=g; newData[idx+2]=b; newData[idx+3]=a;
+          }
+        }
+      }
+      return new ImageData(newData, width, height);
+    }
 
-// 初始化
-window.onload = function() {
-  renderServices();
-  renderPosts();
-};
+    // ---------- 核心：像素化处理 ----------
+    function processImage() {
+      if (!originalImage) {
+        alert('请先上传图片');
+        return;
+      }
+
+      const pixelSize = parseInt(pixelSizeSlider.value);
+      const maxColors = parseInt(colorNumSlider.value);
+      const paletteKey = paletteSelect.value;
+      const useOutline = outlineCheck.checked;
+      const useSmooth = smoothCheck.checked;
+      
+      // 更新显示
+      pixelSizeVal.textContent = pixelSize;
+      colorNumVal.textContent = maxColors;
+
+      // 1. 缩小图片 (像素化)
+      const imgW = originalImage.width;
+      const imgH = originalImage.height;
+      
+      // 计算目标尺寸 (按像素块大小)
+      let smallW = Math.max(1, Math.floor(imgW / pixelSize));
+      let smallH = Math.max(1, Math.floor(imgH / pixelSize));
+      
+      // 限制最小尺寸
+      if (smallW < 8) smallW = 8;
+      if (smallH < 8) smallH = 8;
+      
+      // 创建离屏canvas进行缩小
+      const offCanvas = document.createElement('canvas');
+      offCanvas.width = smallW;
+      offCanvas.height = smallH;
+      const offCtx = offCanvas.getContext('2d');
+      offCtx.imageSmoothingEnabled = useSmooth;  // 柔化影响缩小效果
+      offCtx.drawImage(originalImage, 0, 0, smallW, smallH);
+      
+      // 获取缩小后的图像数据
+      let smallImageData = offCtx.getImageData(0, 0, smallW, smallH);
+      
+      // 2. 颜色量化 (应用调色板，并限制颜色数)
+      let palette = PALETTES[paletteKey];
+      // 如果最大颜色数小于调色板长度，截取
+      if (maxColors < palette.length) {
+        palette = palette.slice(0, maxColors);
+      }
+      smallImageData = applyPalette(smallImageData, palette);
+      
+      // 3. 添加描边（在低分辨率下操作更高效）
+      if (useOutline) {
+        smallImageData = addOutline(smallImageData);
+      }
+      
+      // 4. 放大回显示尺寸 (保持像素感)
+      const displayW = smallW * pixelSize;
+      const displayH = smallH * pixelSize;
+      
+      canvas.width = displayW;
+      canvas.height = displayH;
+      
+      // 绘制放大后的像素图
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = smallW;
+      tempCanvas.height = smallH;
+      tempCanvas.getContext('2d').putImageData(smallImageData, 0, 0);
+      
+      ctx.imageSmoothingEnabled = false;   // 关键：保持锯齿边缘
+      ctx.clearRect(0, 0, displayW, displayH);
+      ctx.drawImage(tempCanvas, 0, 0, displayW, displayH);
+      
+      // 保存当前像素数据供导出
+      currentPixels = ctx.getImageData(0, 0, displayW, displayH);
+      
+      // 更新信息
+      sizeInfo.textContent = `${displayW} x ${displayH}`;
+      // 统计实际颜色数
+      const colorSet = new Set();
+      const data = currentPixels.data;
+      for (let i=0; i<data.length; i+=4) {
+        if (data[i+3] > 0) {
+          colorSet.add(`${data[i]},${data[i+1]},${data[i+2]}`);
+        }
+      }
+      colorCountInfo.textContent = `颜色数: ${colorSet.size}`;
+    }
+
+    // ---------- 事件绑定 ----------
+    function handleImageUpload(file) {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          originalImage = img;
+          processImage();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        handleImageUpload(e.target.files[0]);
+      }
+    });
+
+    // 拖拽上传
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#c0b09e';
+    });
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.style.background = '#cfc1b2';
+    });
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.style.background = '#cfc1b2';
+      const file = e.dataTransfer.files[0];
+      if (file) handleImageUpload(file);
+    });
+    
+    uploadArea.addEventListener('click', () => fileInput.click());
+
+    // 滑块/复选框变化时自动处理 (为了流畅，用input事件)
+    pixelSizeSlider.addEventListener('input', () => {
+      pixelSizeVal.textContent = pixelSizeSlider.value;
+      processImage();
+    });
+    colorNumSlider.addEventListener('input', () => {
+      colorNumVal.textContent = colorNumSlider.value;
+      processImage();
+    });
+    paletteSelect.addEventListener('change', processImage);
+    outlineCheck.addEventListener('change', processImage);
+    smoothCheck.addEventListener('change', processImage);
+    applyBtn.addEventListener('click', processImage);  // 手动触发也可以
+
+    // 导出
+    exportBtn.addEventListener('click', () => {
+      if (!currentPixels) {
+        alert('没有可导出的像素画');
+        return;
+      }
+      // 直接导出当前canvas内容
+      const link = document.createElement('a');
+      link.download = `pixel_q_${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    // 重置：清空图片
+    resetBtn.addEventListener('click', () => {
+      originalImage = null;
+      currentPixels = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.width = 400; canvas.height = 400;
+      ctx.fillStyle = '#ddd'; ctx.fillRect(0,0,400,400);
+      ctx.fillStyle = '#555';
+      ctx.font = 'bold 20px monospace';
+      ctx.fillText('等待上传', 120, 220);
+      sizeInfo.textContent = '400x400';
+      colorCountInfo.textContent = '颜色数: —';
+      fileInput.value = '';
+    });
+
+    // 初始化画布
+    resetBtn.click();
+
+    // 加载一个默认演示图片（可选）
+    (function loadDemo() {
+      const demoImg = new Image();
+      demoImg.crossOrigin = 'Anonymous';
+      demoImg.onload = () => {
+        originalImage = demoImg;
+        processImage();
+      };
+      // 一张可爱的像素风格示例 (SVG)
+      demoImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f7d9aa'/%3E%3Ccircle cx='35' cy='35' r='18' fill='%23ffffff'/%3E%3Ccircle cx='65' cy='35' r='18' fill='%23ffffff'/%3E%3Ccircle cx='35' cy='35' r='8' fill='%23000'/%3E%3Ccircle cx='65' cy='35' r='8' fill='%23000'/%3E%3Cpath d='M30 60 Q50 80,70 60' stroke='%23c04040' stroke-width='6' fill='none' stroke-linecap='round' /%3E%3C/svg%3E";
+    })();
+
+  })();
 </script>
-
 </body>
 </html>
