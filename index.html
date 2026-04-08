@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>🎮 Q版像素风格转换器 · 实时预览</title>
+  <title>🎮 泰拉瑞亚风格 · 像素转换器</title>
   <style>
+    /* 整体风格保持原有复古游戏感，仅做细微调整 */
     * {
       box-sizing: border-box;
       margin: 0;
@@ -12,7 +13,7 @@
     }
 
     body {
-      background: linear-gradient(145deg, #1a1e2c 0%, #2a2f44 100%);
+      background: #1e2229;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -22,58 +23,43 @@
     }
 
     .pixel-card {
-      max-width: 1100px;
+      max-width: 1200px;
       width: 100%;
-      background: #f0e9de;
+      background: #3a404a;
       border-radius: 32px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5), inset 0 0 0 2px #fff3e6;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), inset 0 0 0 2px #6b7a8a;
       padding: 24px;
-      border: 6px solid #b59d7e;
+      border: 6px solid #2a3038;
     }
 
     h1 {
       display: flex;
       align-items: center;
       gap: 12px;
-      font-size: 2.4rem;
+      font-size: 2.2rem;
       font-weight: 800;
-      color: #2d281c;
-      text-shadow: 4px 4px 0 #d4b68a;
+      color: #e6d5b8;
+      text-shadow: 4px 4px 0 #4a3a2a;
       letter-spacing: 2px;
       margin-bottom: 20px;
       border-bottom: 4px dashed #8b7a62;
       padding-bottom: 16px;
     }
 
-    h1 i {
-      font-size: 2.8rem;
-    }
-
     .upload-area {
-      background: #cfc1b2;
+      background: #4b5663;
       border-radius: 24px;
       padding: 28px 20px;
       text-align: center;
-      border: 3px dashed #5e4e3d;
+      border: 3px dashed #9ab8d4;
       margin-bottom: 24px;
       cursor: pointer;
       transition: all 0.2s;
-      box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+      color: #e6d5b8;
     }
 
-    .upload-area:hover {
-      background: #d9cdbf;
-      border-color: #3a2e22;
-    }
-
-    .upload-area input {
-      display: none;
-    }
-
-    .upload-icon {
-      font-size: 48px;
-      margin-bottom: 8px;
-    }
+    .upload-area:hover { background: #5f6c7c; border-color: #c0daf0; }
+    .upload-area input { display: none; }
 
     .preview-panel {
       display: flex;
@@ -84,31 +70,32 @@
     .canvas-container {
       flex: 2;
       min-width: 320px;
-      background: #5d5346;
+      background: #252a31;
       padding: 16px;
       border-radius: 24px;
-      box-shadow: inset 0 0 0 4px #2f281e, 0 8px 0 #3a2e22;
+      box-shadow: inset 0 0 0 4px #1a1e24, 0 8px 0 #15191f;
     }
 
     #pixelCanvas {
       display: block;
       width: 100%;
       height: auto;
-      image-rendering: crisp-edges;          /* 像素风 */
+      image-rendering: crisp-edges;
       image-rendering: pixelated;
       border-radius: 12px;
-      box-shadow: 0 0 0 3px #aa947c;
+      box-shadow: 0 0 0 3px #5a6b7a;
       background: #fff;
     }
 
     .controls {
       flex: 1.2;
-      min-width: 260px;
-      background: #e3d5c4;
+      min-width: 280px;
+      background: #3f4853;
       border-radius: 24px;
       padding: 22px 20px;
-      box-shadow: inset 0 0 0 2px #fef7e9, 0 8px 0 #7e6e5a;
-      border: 2px solid #9c8a74;
+      box-shadow: inset 0 0 0 2px #6c7f8f, 0 8px 0 #2a3038;
+      border: 2px solid #1e242a;
+      color: #e6d5b8;
     }
 
     .control-group {
@@ -119,7 +106,7 @@
       display: flex;
       justify-content: space-between;
       font-weight: bold;
-      color: #2d281c;
+      color: #f0e6d2;
       text-transform: uppercase;
       letter-spacing: 1px;
       font-size: 0.9rem;
@@ -135,9 +122,9 @@
 
     input[type="range"]::-webkit-slider-runnable-track {
       height: 12px;
-      background: #5e5242;
+      background: #2a323c;
       border-radius: 12px;
-      box-shadow: inset 0 1px 4px #1f1a14;
+      box-shadow: inset 0 1px 4px #0f1216;
     }
 
     input[type="range"]::-webkit-slider-thumb {
@@ -145,10 +132,10 @@
       height: 26px;
       width: 26px;
       border-radius: 6px;
-      background: #f3c26b;
+      background: #c9a87c;
       margin-top: -7px;
-      border: 2px solid #2f281e;
-      box-shadow: 0 3px 0 #8b6f4c;
+      border: 2px solid #1e1a14;
+      box-shadow: 0 3px 0 #6b5a44;
       cursor: pointer;
     }
 
@@ -156,13 +143,12 @@
       width: 100%;
       padding: 12px 16px;
       background: #fbf3e0;
-      border: 3px solid #5e4e3d;
+      border: 3px solid #3f4a54;
       border-radius: 20px;
       font-weight: bold;
-      color: #2d281c;
+      color: #1e242a;
       font-size: 1rem;
       cursor: pointer;
-      box-shadow: inset 0 2px 5px rgba(0,0,0,0.05), 0 4px 0 #7b6955;
     }
 
     .checkbox-item {
@@ -180,14 +166,14 @@
     }
 
     .btn {
-      background: #d6a158;
+      background: #b68b5c;
       border: none;
       border-radius: 48px;
       padding: 16px 20px;
       font-weight: bold;
       font-size: 1.2rem;
       color: #1e1a14;
-      box-shadow: 0 6px 0 #7a5c3a, 0 2px 8px rgba(0,0,0,0.2);
+      box-shadow: 0 6px 0 #6b4f36, 0 2px 8px rgba(0,0,0,0.2);
       border: 2px solid #fbeec9;
       cursor: pointer;
       width: 100%;
@@ -198,7 +184,7 @@
 
     .btn:active {
       transform: translateY(4px);
-      box-shadow: 0 2px 0 #7a5c3a, 0 2px 6px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 0 #6b4f36, 0 2px 6px rgba(0,0,0,0.2);
     }
 
     .btn.export {
@@ -211,7 +197,7 @@
 
     .value-display {
       font-family: 'Courier New', monospace;
-      background: #2f2a22;
+      background: #1e242a;
       color: #f0ddaa;
       padding: 4px 12px;
       border-radius: 30px;
@@ -219,7 +205,7 @@
 
     .footer-note {
       margin-top: 16px;
-      color: #4e3f2f;
+      color: #b8a890;
       text-align: center;
       font-size: 0.8rem;
     }
@@ -228,8 +214,8 @@
 <body>
 <div class="pixel-card">
   <h1>
-    <span>🕹️</span> Q·像素化
-    <span style="margin-left: auto; font-size: 1rem;">▼ 拖拽图片 or 点击上传</span>
+    <span>🕹️</span> 泰拉瑞亚·像素化
+    <span style="margin-left: auto; font-size: 1rem;">▼ 点击或拖拽上传图片</span>
   </h1>
 
   <!-- 上传区域 -->
@@ -265,20 +251,26 @@
       <div class="control-group">
         <label>🌈 调色板预设</label>
         <select id="paletteSelect">
-          <option value="bright" selected>🌟 明亮卡通</option>
+          <option value="terraria" selected>⚔️ 泰拉瑞亚复古 (推荐)</option>
+          <option value="bright">🌟 明亮卡通</option>
           <option value="retro">📺 复古游戏 (DB16)</option>
           <option value="mono">🎞️ 黑白漫画</option>
         </select>
       </div>
 
       <div class="checkbox-item">
-        <input type="checkbox" id="outlineCheck" checked> 
-        <label style="margin-bottom:0;">✏️ 添加黑色描边 (更Q)</label>
+        <input type="checkbox" id="noiseCheck" checked> 
+        <label style="margin-bottom:0;">✨ 增加杂色 (泰拉风纹理)</label>
       </div>
 
       <div class="checkbox-item">
-        <input type="checkbox" id="smoothCheck"> 
-        <label style="margin-bottom:0;">🌀 边缘柔化 (略微软化)</label>
+        <input type="checkbox" id="ditherCheck"> 
+        <label style="margin-bottom:0;">🌓 色彩抖动 (增加过渡感)</label>
+      </div>
+
+      <div class="checkbox-item">
+        <input type="checkbox" id="outlineCheck"> 
+        <label style="margin-bottom:0;">✏️ 添加黑色描边</label>
       </div>
 
       <button class="btn" id="applyBtn">✨ 立即转换</button>
@@ -287,7 +279,7 @@
         <button class="btn" id="resetBtn" style="background:#7e8a7a; box-shadow:0 6px 0 #4f5a4b;">🔄 重置图片</button>
       </div>
       <div class="footer-note">
-        * 调整参数后自动预览
+        * 调整参数后自动预览 | 灵感来自泰拉瑞亚
       </div>
     </div>
   </div>
@@ -306,8 +298,9 @@
     const pixelSizeSlider = document.getElementById('pixelSize');
     const colorNumSlider = document.getElementById('colorNum');
     const paletteSelect = document.getElementById('paletteSelect');
+    const noiseCheck = document.getElementById('noiseCheck');
+    const ditherCheck = document.getElementById('ditherCheck');
     const outlineCheck = document.getElementById('outlineCheck');
-    const smoothCheck = document.getElementById('smoothCheck');
     const applyBtn = document.getElementById('applyBtn');
     const exportBtn = document.getElementById('exportBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -318,17 +311,23 @@
     const colorCountInfo = document.getElementById('colorCountInfo');
 
     // ---------- 状态 ----------
-    let originalImage = null;            // Image 对象
-    let currentPixels = null;            // 当前处理后的像素数据 { data, width, height }
+    let originalImage = null;
+    let currentPixels = null;
     
-    // 调色板定义
+    // 调色板定义 - 新增泰拉瑞亚风格 (基于常见块/武器色彩提取)
     const PALETTES = {
+      terraria: [ // 泰拉瑞亚风格 - 浓郁、高对比
+        [255,255,255],[0,0,0],[248,56,0],[255,153,0],[252,232,0],[0,184,0],[0,168,232],
+        [0,84,200],[120,48,200],[248,120,200],[248,200,160],[160,84,0],[104,68,252],
+        [60,188,252],[120,200,120],[200,120,80],[30,120,90],[140,70,40],[200,60,80],
+        [80,40,20],[180,100,140],[220,200,100],[90,80,150],[40,100,170],[180,60,20]
+      ],
       bright: [
         [255,255,255],[0,0,0],[248,56,0],[255,153,0],[252,232,0],[0,184,0],[0,168,232],
         [0,84,200],[120,48,200],[248,120,200],[248,200,160],[160,84,0],[104,68,252],
         [60,188,252],[120,200,120],[200,120,80]
       ],
-      retro: [  // 经典16色 (近似)
+      retro: [  // 经典16色
         [0,0,0],[29,43,83],[126,37,83],[0,135,81],[171,82,54],[95,87,79],[194,195,199],
         [255,241,232],[255,0,77],[255,163,0],[255,236,39],[0,228,54],[41,173,255],
         [131,118,156],[255,119,168],[255,204,170]
@@ -339,13 +338,12 @@
       ]
     };
 
-    // ---------- 辅助函数：颜色距离 ----------
+    // 颜色距离
     function colorDistance(r1,g1,b1, r2,g2,b2) {
       const dr = r1 - r2, dg = g1 - g2, db = b1 - b2;
       return dr*dr + dg*dg + db*db;
     }
 
-    // 找到调色板中最接近的颜色
     function findClosestColor(r, g, b, palette) {
       let minDist = Infinity;
       let closest = palette[0];
@@ -359,25 +357,6 @@
       return closest;
     }
 
-    // 中位切分减少颜色 (快速但非精确，适合实时)
-    function reduceColorsWithPalette(imageData, maxColors, palette) {
-      const data = imageData.data;
-      const len = data.length;
-      // 如果已经有目标调色板，则直接映射
-      const newData = new Uint8ClampedArray(len);
-      for (let i = 0; i < len; i += 4) {
-        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
-        if (a < 128) {
-          newData[i] = 255; newData[i+1]=255; newData[i+2]=255; newData[i+3]=0;
-          continue;
-        }
-        const [nr, ng, nb] = findClosestColor(r, g, b, palette);
-        newData[i] = nr; newData[i+1] = ng; newData[i+2] = nb; newData[i+3] = 255;
-      }
-      return new ImageData(newData, imageData.width, imageData.height);
-    }
-
-    // 简易颜色量化 (使用调色板)
     function applyPalette(imageData, palette) {
       const data = imageData.data;
       const newData = new Uint8ClampedArray(data.length);
@@ -393,18 +372,95 @@
       return new ImageData(newData, imageData.width, imageData.height);
     }
 
-    // 添加黑色描边 (基于边缘检测)
+    // 新增：添加杂色（Noise）——泰拉瑞亚纹理感的关键
+    function addNoise(imageData, intensity = 0.15) {
+      const data = imageData.data;
+      const newData = new Uint8ClampedArray(data.length);
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i], g = data[i+1], b = data[i+2], a = data[i+3];
+        if (a === 0) {
+          newData[i]=r; newData[i+1]=g; newData[i+2]=b; newData[i+3]=a;
+          continue;
+        }
+        // 添加随机扰动，模仿手绘感
+        const noiseVal = (Math.random() - 0.5) * intensity * 255;
+        newData[i] = Math.min(255, Math.max(0, r + noiseVal));
+        newData[i+1] = Math.min(255, Math.max(0, g + noiseVal));
+        newData[i+2] = Math.min(255, Math.max(0, b + noiseVal));
+        newData[i+3] = a;
+      }
+      return new ImageData(newData, imageData.width, imageData.height);
+    }
+
+    // 新增：简单的有序抖动 (Ordered Dithering) 模拟复古过渡
+    function applyOrderedDither(imageData, palette) {
+      const data = imageData.data;
+      const w = imageData.width;
+      const h = imageData.height;
+      const newData = new Uint8ClampedArray(data.length);
+      
+      // 4x4 Bayer 矩阵
+      const bayerMatrix = [
+        [0, 8, 2, 10],
+        [12, 4, 14, 6],
+        [3, 11, 1, 9],
+        [15, 7, 13, 5]
+      ].map(row => row.map(v => (v + 0.5) / 16 - 0.5));
+      
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          const idx = (y * w + x) * 4;
+          const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
+          if (a < 128) {
+            newData[idx]=255; newData[idx+1]=255; newData[idx+2]=255; newData[idx+3]=0;
+            continue;
+          }
+          
+          const threshold = bayerMatrix[y % 4][x % 4] * 60; // 阈值调节
+          let dr = r, dg = g, db = b;
+          
+          // 找到最接近的两个颜色，根据阈值抖动
+          let closest = findClosestColor(r, g, b, palette);
+          let secondClosest = closest;
+          let minDist = Infinity, secondDist = Infinity;
+          
+          for (const col of palette) {
+            const dist = colorDistance(r, g, b, col[0], col[1], col[2]);
+            if (dist < minDist) {
+              secondDist = minDist;
+              secondClosest = closest;
+              minDist = dist;
+              closest = col;
+            } else if (dist < secondDist) {
+              secondDist = dist;
+              secondClosest = col;
+            }
+          }
+          
+          // 如果两个颜色非常接近，直接取最近
+          if (secondDist - minDist > 3000 || secondDist === Infinity) {
+            newData[idx]=closest[0]; newData[idx+1]=closest[1]; newData[idx+2]=closest[2];
+          } else {
+            // 抖动决定用哪个颜色
+            const mix = threshold > 0 ? (minDist / (minDist + secondDist)) : 0.5;
+            const useSecond = (Math.random() < mix);
+            const finalCol = useSecond ? secondClosest : closest;
+            newData[idx]=finalCol[0]; newData[idx+1]=finalCol[1]; newData[idx+2]=finalCol[2];
+          }
+          newData[idx+3] = 255;
+        }
+      }
+      return new ImageData(newData, w, h);
+    }
+
     function addOutline(imageData) {
       const { width, height, data } = imageData;
       const newData = new Uint8ClampedArray(data.length);
       const threshold = 30;
-      
       for (let y = 0; y < height; y++) {
         for (let x = 0; x < width; x++) {
           const idx = (y * width + x) * 4;
           const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
-          
-          // 检查上下左右是否有明显不同
           let isEdge = false;
           if (x > 0) {
             const left = ((y*width + (x-1))*4);
@@ -422,7 +478,6 @@
             const down = (((y+1)*width + x)*4);
             if (Math.abs(r - data[down]) + Math.abs(g - data[down+1]) + Math.abs(b - data[down+2]) > threshold) isEdge = true;
           }
-          
           if (isEdge) {
             newData[idx] = 0; newData[idx+1]=0; newData[idx+2]=0; newData[idx+3]=255;
           } else {
@@ -433,7 +488,7 @@
       return new ImageData(newData, width, height);
     }
 
-    // ---------- 核心：像素化处理 ----------
+    // ---------- 核心处理 ----------
     function processImage() {
       if (!originalImage) {
         alert('请先上传图片');
@@ -443,72 +498,68 @@
       const pixelSize = parseInt(pixelSizeSlider.value);
       const maxColors = parseInt(colorNumSlider.value);
       const paletteKey = paletteSelect.value;
+      const useNoise = noiseCheck.checked;
+      const useDither = ditherCheck.checked;
       const useOutline = outlineCheck.checked;
-      const useSmooth = smoothCheck.checked;
       
-      // 更新显示
       pixelSizeVal.textContent = pixelSize;
       colorNumVal.textContent = maxColors;
 
-      // 1. 缩小图片 (像素化)
       const imgW = originalImage.width;
       const imgH = originalImage.height;
       
-      // 计算目标尺寸 (按像素块大小)
       let smallW = Math.max(1, Math.floor(imgW / pixelSize));
       let smallH = Math.max(1, Math.floor(imgH / pixelSize));
-      
-      // 限制最小尺寸
       if (smallW < 8) smallW = 8;
       if (smallH < 8) smallH = 8;
       
-      // 创建离屏canvas进行缩小
       const offCanvas = document.createElement('canvas');
       offCanvas.width = smallW;
       offCanvas.height = smallH;
       const offCtx = offCanvas.getContext('2d');
-      offCtx.imageSmoothingEnabled = useSmooth;  // 柔化影响缩小效果
+      offCtx.imageSmoothingEnabled = false; // 保持像素感
       offCtx.drawImage(originalImage, 0, 0, smallW, smallH);
       
-      // 获取缩小后的图像数据
       let smallImageData = offCtx.getImageData(0, 0, smallW, smallH);
       
-      // 2. 颜色量化 (应用调色板，并限制颜色数)
+      // 获取调色板并截取
       let palette = PALETTES[paletteKey];
-      // 如果最大颜色数小于调色板长度，截取
       if (maxColors < palette.length) {
         palette = palette.slice(0, maxColors);
       }
-      smallImageData = applyPalette(smallImageData, palette);
       
-      // 3. 添加描边（在低分辨率下操作更高效）
+      // 根据选项应用效果
+      if (useDither) {
+        smallImageData = applyOrderedDither(smallImageData, palette);
+      } else {
+        smallImageData = applyPalette(smallImageData, palette);
+      }
+      
+      if (useNoise) {
+        smallImageData = addNoise(smallImageData, 0.12);
+      }
+      
       if (useOutline) {
         smallImageData = addOutline(smallImageData);
       }
       
-      // 4. 放大回显示尺寸 (保持像素感)
       const displayW = smallW * pixelSize;
       const displayH = smallH * pixelSize;
-      
       canvas.width = displayW;
       canvas.height = displayH;
       
-      // 绘制放大后的像素图
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = smallW;
       tempCanvas.height = smallH;
       tempCanvas.getContext('2d').putImageData(smallImageData, 0, 0);
       
-      ctx.imageSmoothingEnabled = false;   // 关键：保持锯齿边缘
+      ctx.imageSmoothingEnabled = false;
       ctx.clearRect(0, 0, displayW, displayH);
       ctx.drawImage(tempCanvas, 0, 0, displayW, displayH);
       
-      // 保存当前像素数据供导出
       currentPixels = ctx.getImageData(0, 0, displayW, displayH);
-      
-      // 更新信息
       sizeInfo.textContent = `${displayW} x ${displayH}`;
-      // 统计实际颜色数
+      
       const colorSet = new Set();
       const data = currentPixels.data;
       for (let i=0; i<data.length; i+=4) {
@@ -535,29 +586,25 @@
     }
 
     fileInput.addEventListener('change', (e) => {
-      if (e.target.files.length > 0) {
-        handleImageUpload(e.target.files[0]);
-      }
+      if (e.target.files.length > 0) handleImageUpload(e.target.files[0]);
     });
 
-    // 拖拽上传
     uploadArea.addEventListener('dragover', (e) => {
       e.preventDefault();
-      uploadArea.style.background = '#c0b09e';
+      uploadArea.style.background = '#5f6c7c';
     });
     uploadArea.addEventListener('dragleave', () => {
-      uploadArea.style.background = '#cfc1b2';
+      uploadArea.style.background = '#4b5663';
     });
     uploadArea.addEventListener('drop', (e) => {
       e.preventDefault();
-      uploadArea.style.background = '#cfc1b2';
+      uploadArea.style.background = '#4b5663';
       const file = e.dataTransfer.files[0];
       if (file) handleImageUpload(file);
     });
     
     uploadArea.addEventListener('click', () => fileInput.click());
 
-    // 滑块/复选框变化时自动处理 (为了流畅，用input事件)
     pixelSizeSlider.addEventListener('input', () => {
       pixelSizeVal.textContent = pixelSizeSlider.value;
       processImage();
@@ -567,31 +614,29 @@
       processImage();
     });
     paletteSelect.addEventListener('change', processImage);
+    noiseCheck.addEventListener('change', processImage);
+    ditherCheck.addEventListener('change', processImage);
     outlineCheck.addEventListener('change', processImage);
-    smoothCheck.addEventListener('change', processImage);
-    applyBtn.addEventListener('click', processImage);  // 手动触发也可以
+    applyBtn.addEventListener('click', processImage);
 
-    // 导出
     exportBtn.addEventListener('click', () => {
       if (!currentPixels) {
         alert('没有可导出的像素画');
         return;
       }
-      // 直接导出当前canvas内容
       const link = document.createElement('a');
-      link.download = `pixel_q_${Date.now()}.png`;
+      link.download = `terraria_pixel_${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     });
 
-    // 重置：清空图片
     resetBtn.addEventListener('click', () => {
       originalImage = null;
       currentPixels = null;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       canvas.width = 400; canvas.height = 400;
-      ctx.fillStyle = '#ddd'; ctx.fillRect(0,0,400,400);
-      ctx.fillStyle = '#555';
+      ctx.fillStyle = '#2a323c'; ctx.fillRect(0,0,400,400);
+      ctx.fillStyle = '#c9a87c';
       ctx.font = 'bold 20px monospace';
       ctx.fillText('等待上传', 120, 220);
       sizeInfo.textContent = '400x400';
@@ -599,10 +644,9 @@
       fileInput.value = '';
     });
 
-    // 初始化画布
     resetBtn.click();
 
-    // 加载一个默认演示图片（可选）
+    // 加载默认演示图
     (function loadDemo() {
       const demoImg = new Image();
       demoImg.crossOrigin = 'Anonymous';
@@ -610,8 +654,7 @@
         originalImage = demoImg;
         processImage();
       };
-      // 一张可爱的像素风格示例 (SVG)
-      demoImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23f7d9aa'/%3E%3Ccircle cx='35' cy='35' r='18' fill='%23ffffff'/%3E%3Ccircle cx='65' cy='35' r='18' fill='%23ffffff'/%3E%3Ccircle cx='35' cy='35' r='8' fill='%23000'/%3E%3Ccircle cx='65' cy='35' r='8' fill='%23000'/%3E%3Cpath d='M30 60 Q50 80,70 60' stroke='%23c04040' stroke-width='6' fill='none' stroke-linecap='round' /%3E%3C/svg%3E";
+      demoImg.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23a56b3f'/%3E%3Ccircle cx='35' cy='35' r='18' fill='%23f0e6d2'/%3E%3Ccircle cx='65' cy='35' r='18' fill='%23f0e6d2'/%3E%3Ccircle cx='35' cy='35' r='8' fill='%23000'/%3E%3Ccircle cx='65' cy='35' r='8' fill='%23000'/%3E%3Cpath d='M30 60 Q50 80,70 60' stroke='%23c04040' stroke-width='6' fill='none' stroke-linecap='round' /%3E%3C/svg%3E";
     })();
 
   })();
