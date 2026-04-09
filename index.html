@@ -3,298 +3,207 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>🎨 像素画工坊 · 图片转像素风</title>
+  <title>🎨 像素画工坊 · 调色板量化版</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
-      font-family: system-ui, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+      font-family: system-ui, 'Segoe UI', 'Roboto', sans-serif;
     }
     body {
       min-height: 100vh;
       background: linear-gradient(145deg, #1a2639 0%, #2e3b4e 100%);
+      padding: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 16px;
-      margin: 0;
     }
-    .card {
-      max-width: 780px;
+    .app {
+      max-width: 1300px;
       width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+    }
+    /* 左侧：图片与画布 */
+    .studio {
+      flex: 2 1 600px;
+      min-width: 320px;
       background: rgba(22, 28, 36, 0.9);
       backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 215, 150, 0.25);
       border-radius: 36px;
       padding: 24px 24px 32px;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(230, 180, 80, 0.1) inset;
-      transition: all 0.2s ease;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6), inset 0 0 0 1px rgba(230,180,80,0.1);
     }
-    h1 {
+    /* 右侧：调色板面板 */
+    .palette-panel {
+      flex: 1.2 1 320px;
+      background: rgba(22, 28, 36, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(210, 180, 140, 0.3);
+      border-radius: 36px;
+      padding: 24px 20px;
+      box-shadow: 0 20px 30px rgba(0,0,0,0.5), inset 0 0 0 1px #5e4d3866;
+      color: #f0e1ce;
+      display: flex;
+      flex-direction: column;
+    }
+    h1, h2 {
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #f3e3c2;
+      text-shadow: 0 4px 8px #00000040;
+      margin: 0 0 8px 0;
       display: flex;
       align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 2.2rem;
-      letter-spacing: 2px;
-      color: #f3e3c2;
-      text-shadow: 0 4px 8px #00000040, 2px 2px 0 #3a2819;
-      margin: 0 0 8px 0;
-      word-break: break-word;
+      gap: 8px;
     }
-    h1 span {
-      background: #e4b574;
-      font-size: 1.8rem;
-      padding: 0 8px;
-      border-radius: 20px;
-      color: #1e1a14;
-      box-shadow: inset 0 -2px 0 #6b4f2a;
-    }
+    h1 span, h2 span { background: #e4b574; padding: 0 10px; border-radius: 30px; color: #1e1a14; }
     .sub {
-      color: #bcb09b;
-      margin-bottom: 24px;
-      font-style: italic;
-      border-left: 4px solid #d4a373;
-      padding-left: 16px;
-      font-weight: 400;
-      font-size: 1rem;
+      color: #bcb09b; margin-bottom: 20px; border-left: 4px solid #d4a373; padding-left: 16px;
     }
     .upload-area {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 12px 20px;
-      margin-bottom: 24px;
-      background: #1f2a36c9;
-      padding: 14px 20px;
-      border-radius: 60px;
-      border: 1px dashed #b99e6b;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 20px;
+      background: #1f2a36c9; padding: 12px 18px; border-radius: 60px; border: 1px dashed #b99e6b;
     }
     .file-label {
-      background: #d9b382;
-      color: #1d1a14;
-      font-weight: bold;
-      padding: 10px 24px;
-      border-radius: 40px;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 6px 0 #7a5e3e, 0 4px 8px black;
-      transition: all 0.1s;
-      border: none;
-      display: inline-block;
-      text-align: center;
-      flex: 0 0 auto;
+      background: #d9b382; color: #1d1a14; font-weight: bold; padding: 10px 24px;
+      border-radius: 40px; cursor: pointer; box-shadow: 0 6px 0 #7a5e3e, 0 4px 8px black;
+      transition: 0.1s; border: none; display: inline-block;
     }
-    .file-label:active {
-      transform: translateY(4px);
-      box-shadow: 0 2px 0 #7a5e3e, 0 4px 8px black;
-    }
-    .file-label input {
-      display: none;
-    }
+    .file-label:active { transform: translateY(4px); box-shadow: 0 2px 0 #7a5e3e, 0 4px 8px black; }
+    .file-label input { display: none; }
     .file-name {
-      color: #e9dbc4;
-      background: #0f151c;
-      padding: 8px 16px;
-      border-radius: 40px;
-      font-size: 0.9rem;
-      flex: 1 1 180px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border: 1px solid #5f5340;
+      color: #e9dbc4; background: #0f151c; padding: 8px 16px; border-radius: 40px;
+      flex: 1 1 160px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
-    .preview-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      margin-bottom: 24px;
-      align-items: flex-start;
-    }
-    .original-box {
-      flex: 1 1 160px;
-      min-width: 130px;
-      background: #1b232b;
-      border-radius: 24px;
-      padding: 16px 12px;
-      box-shadow: inset 0 2px 6px #00000080, 0 8px 0 #0f1419;
-      border-bottom: 2px solid #5e4a33;
-    }
-    .original-box p {
-      color: #cfc1a6;
-      margin: 0 0 10px 0;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .thumb-img {
-      width: 100%;
-      max-height: 160px;
-      object-fit: contain;
-      background: #1e1e1e;
-      border-radius: 18px;
-      border: 2px solid #5e4d38;
-      box-shadow: 0 0 0 1px #00000055;
-      display: block;
-    }
-    .pixel-panel {
-      flex: 3 1 300px;
-      background: #1e2a32;
-      border-radius: 28px;
-      padding: 16px 16px 20px;
-      box-shadow: inset 0 2px 5px #000000b0, 0 8px 0 #12181e, 0 0 0 1px #786b54;
-    }
+    .preview-row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 20px; }
+    .thumb-box { flex: 1 1 130px; background: #1b232b; border-radius: 24px; padding: 12px; box-shadow: inset 0 2px 6px #00000080; }
+    .thumb-box p { color: #cfc1a6; margin-bottom: 8px; }
+    .thumb-img { width: 100%; max-height: 140px; object-fit: contain; background: #1e1e1e; border-radius: 16px; border: 2px solid #5e4d38; }
     .canvas-wrapper {
-      display: flex;
-      justify-content: center;
-      background: #0d131a;
-      border-radius: 20px;
-      padding: 16px;
-      margin-bottom: 12px;
-      border: 2px solid #3d362b;
-      box-shadow: inset 0 0 0 2px #1f1a12;
+      flex: 3; background: #0d131a; border-radius: 20px; padding: 16px;
+      border: 2px solid #3d362b; box-shadow: inset 0 0 0 2px #1f1a12;
+      display: flex; justify-content: center;
     }
     #pixelCanvas {
-      display: block;
-      max-width: 100%;
-      height: auto;
-      border-radius: 12px;
-      image-rendering: crisp-edges;    /* 像素风格 */
-      image-rendering: pixelated;
+      display: block; max-width: 100%; height: auto; border-radius: 12px;
+      image-rendering: crisp-edges; image-rendering: pixelated;
       background: repeating-conic-gradient(#2a2a2a 0% 25%, #1f1f1f 0% 50%) 50% / 20px 20px;
       box-shadow: 0 0 0 2px #2b231b, 0 6px 0 #0b0f12;
     }
     .control-bar {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px 10px;
-      margin-top: 6px;
+      display: flex; flex-wrap: wrap; align-items: center; gap: 15px; margin-top: 16px;
+      background: #16212b; padding: 8px 18px; border-radius: 60px;
     }
-    .slider-group {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: #16212b;
-      padding: 5px 15px 5px 20px;
-      border-radius: 40px;
-      box-shadow: inset 0 2px 5px black;
-    }
-    .slider-group label {
-      color: #ebd5b0;
-      font-weight: 600;
-      font-size: 1rem;
-    }
-    .slider-group input {
-      width: 170px;
-      accent-color: #e3a56d;
-      height: 6px;
-      border-radius: 10px;
-    }
-    .slider-group span {
-      min-width: 45px;
-      background: #0b1219;
-      color: #fadfae;
-      padding: 5px 8px;
-      border-radius: 30px;
-      text-align: center;
-      font-weight: bold;
-      border: 1px solid #b29262;
-      font-size: 1rem;
-    }
+    .slider-group { display: flex; align-items: center; gap: 12px; }
+    .slider-group label { color: #ebd5b0; font-weight: 600; }
+    .slider-group input { width: 160px; accent-color: #e3a56d; }
+    .slider-group span { min-width: 40px; background: #0b1219; color: #fadfae; padding: 4px 8px; border-radius: 20px; text-align: center; }
     .btn {
-      background: #b48b54;
-      border: none;
-      color: #1b1710;
-      font-weight: bold;
-      padding: 10px 22px;
-      border-radius: 40px;
-      font-size: 1.1rem;
-      cursor: pointer;
-      box-shadow: 0 5px 0 #5f462c, 0 3px 8px black;
-      transition: 0.07s;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      border: 1px solid #efcd9a;
+      background: #b48b54; border: none; color: #1b1710; font-weight: bold; padding: 10px 22px;
+      border-radius: 40px; font-size: 1rem; cursor: pointer; box-shadow: 0 5px 0 #5f462c, 0 3px 8px black;
+      transition: 0.07s; border: 1px solid #efcd9a; margin-left: auto;
     }
-    .btn:active {
-      transform: translateY(4px);
-      box-shadow: 0 1px 0 #5f462c, 0 3px 8px black;
+    .btn:active { transform: translateY(4px); box-shadow: 0 1px 0 #5f462c, 0 3px 8px black; }
+    .btn.small { padding: 6px 16px; font-size: 0.9rem; margin-left: 0; }
+    .info-text { color: #bcae95; margin-top: 12px; font-size: 0.9rem; }
+    
+    /* 调色板区域 */
+    .palette-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .palette-stats { font-size: 0.9rem; background: #1e2a34; padding: 6px 12px; border-radius: 30px; }
+    .color-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 8px; max-height: 400px; overflow-y: auto; padding-right: 6px;
+      margin-bottom: 20px; border: 1px solid #5e5544; border-radius: 24px; padding: 16px 12px;
+      background: #1b242e;
     }
-    .btn:disabled {
-      opacity: 0.5;
-      transform: none;
-      box-shadow: 0 5px 0 #5f462c;
-      pointer-events: none;
-      filter: grayscale(0.5);
+    .color-swatch {
+      display: flex; flex-direction: column; align-items: center; background: #0e151e;
+      border-radius: 16px; padding: 8px 4px; box-shadow: inset 0 1px 4px black, 0 2px 0 #2f281e;
+      border: 1px solid #7a6e5a;
     }
-    .info-text {
-      color: #bcae95;
-      font-size: 0.85rem;
-      margin-top: 12px;
-      text-align: right;
-      padding: 0 4px;
+    .color-preview {
+      width: 100%; aspect-ratio: 1/1; border-radius: 12px; border: 2px solid #bba88c;
+      box-shadow: 0 2px 0 #1f1a12; margin-bottom: 4px;
     }
-    .footer-note {
-      margin-top: 16px;
-      color: #928b7a;
-      font-size: 0.8rem;
-      text-align: center;
+    .color-label { font-size: 0.75rem; font-weight: bold; color: #e6d7bd; }
+    .color-hex { font-size: 0.65rem; color: #b9aa91; }
+    .palette-actions {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
     }
+    textarea {
+      width: 100%; background: #101a22; border: 1px solid #a9814b; border-radius: 20px;
+      padding: 14px; color: #f0ddc5; font-size: 0.8rem; resize: vertical;
+      margin: 12px 0 8px; font-family: monospace;
+    }
+    .toggle-quantize {
+      display: flex; align-items: center; gap: 10px; margin: 12px 0 8px;
+      background: #1f2c38; padding: 10px 18px; border-radius: 40px;
+    }
+    .toggle-quantize input { width: 20px; height: 20px; accent-color: #d4a373; }
+    .footer-note { color: #928b7a; font-size: 0.8rem; text-align: center; margin-top: 16px; }
   </style>
 </head>
 <body>
-<div class="card">
-  <h1>
-    <span>◈</span> 像素炼成 <span>◈</span>
-  </h1>
-  <div class="sub">⬆️ 上传图片 · 拖动滑块 · 一键下载像素画</div>
-
-  <!-- 上传区域 -->
-  <div class="upload-area">
-    <label class="file-label">
-      📁 选择图片
-      <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp, image/bmp, image/gif, image/svg+xml">
-    </label>
-    <div class="file-name" id="fileNameDisplay">未选择文件</div>
+<div class="app">
+  <!-- 左侧画板 -->
+  <div class="studio">
+    <h1><span>◈</span> 像素炼成 · 色库 <span>◈</span></h1>
+    <div class="sub">⬆️ 上传图片 · 拖动滑块 · 调色板量化</div>
+    <div class="upload-area">
+      <label class="file-label">📁 选择图片 <input type="file" id="fileInput" accept="image/png, image/jpeg, image/webp, image/bmp, image/gif"></label>
+      <div class="file-name" id="fileNameDisplay">未选择文件</div>
+    </div>
+    <div class="preview-row">
+      <div class="thumb-box"><p>🖼️ 原图</p><img id="originalPreview" class="thumb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150'%3E%3Crect width='200' height='150' fill='%23232a33'/%3E%3Ctext x='20' y='85' fill='%23b9a689' font-size='16'%3E等待上传%3C/text%3E%3C/svg%3E" alt="预览"></div>
+      <div class="canvas-wrapper"><canvas id="pixelCanvas" width="400" height="300"></canvas></div>
+    </div>
+    <div class="control-bar">
+      <div class="slider-group">
+        <label>🧩 像素块</label>
+        <input type="range" id="pixelSizeSlider" min="2" max="40" value="12" step="1">
+        <span id="pixelSizeValue">12</span>
+      </div>
+      <button class="btn" id="downloadBtn">⬇️ 下载像素画</button>
+    </div>
+    <div class="info-text" id="sizeInfo">画布: 400x300 · 等待图片</div>
+    <div class="footer-note">✦ 右侧调色板可导入色表 · 开启量化后颜色强制映射 ✦</div>
   </div>
 
-  <!-- 预览区：原图 + 像素画布 -->
-  <div class="preview-row">
-    <div class="original-box">
-      <p>🖼️ 原图预览</p>
-      <img id="originalPreview" class="thumb-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='150' viewBox='0 0 200 150'%3E%3Crect width='200' height='150' fill='%23232a33'/%3E%3Ctext x='20' y='85' font-family='system-ui' font-size='16' fill='%23b9a689'%3E等待上传%3C/text%3E%3C/svg%3E" alt="原图预览">
+  <!-- 右侧调色板 -->
+  <div class="palette-panel">
+    <div class="palette-header">
+      <h2><span>🎨</span> 色板库</h2>
+      <span class="palette-stats" id="paletteCount">0 色</span>
+    </div>
+    <div class="color-grid" id="colorGrid">暂无颜色，请导入或加载示例</div>
+    
+    <div class="toggle-quantize">
+      <input type="checkbox" id="quantizeToggle"> 
+      <label for="quantizeToggle" style="font-weight:600;">🔮 启用调色板量化 (强制映射到最近色)</label>
     </div>
 
-    <div class="pixel-panel">
-      <div class="canvas-wrapper">
-        <canvas id="pixelCanvas" width="400" height="300"></canvas>
-      </div>
-      <div class="control-bar">
-        <div class="slider-group">
-          <label>🧩 像素块</label>
-          <input type="range" id="pixelSizeSlider" min="2" max="40" value="12" step="1">
-          <span id="pixelSizeValue">12</span>
-        </div>
-        <button class="btn" id="downloadBtn"> ⬇️ 下载像素画</button>
-      </div>
-      <div class="info-text" id="sizeInfo">画布: 400 x 300 (等待图片)</div>
+    <textarea id="paletteInput" placeholder="粘贴色表 (格式: 色号 RGB HEX  例如 A1 250.245.205 FAF5CD) 每行一个颜色 ..." rows="3">A1 250.245.205 FAF5CD
+A2 252.254.214 FCFED6
+A3 252.255.146 FCF9F2
+A4 247.236.92 F7EC5C</textarea>
+
+    <div class="palette-actions">
+      <button class="btn small" id="applyPaletteBtn">📥 应用粘贴板</button>
+      <button class="btn small" id="loadExampleBtn">📚 加载完整色表(221色)</button>
+      <button class="btn small" id="clearPaletteBtn">🧹 清空</button>
     </div>
-  </div>
-  <div class="footer-note">
-    ✦ 像素块越大 · 风格越强烈 ✦ 支持透明背景 ✦
+    <p style="font-size:0.75rem; margin-top: 8px; opacity:0.8;">支持格式: 色号 R.G.B HEX (点或空格分隔) 例: A1 250.245.205 FAF5CD</p>
   </div>
 </div>
 
 <script>
   (function(){
     "use strict";
-
-    // DOM 元素
+    // DOM
     const fileInput = document.getElementById('fileInput');
     const fileNameDisplay = document.getElementById('fileNameDisplay');
     const originalPreview = document.getElementById('originalPreview');
@@ -303,261 +212,281 @@
     const pixelSizeSpan = document.getElementById('pixelSizeValue');
     const downloadBtn = document.getElementById('downloadBtn');
     const sizeInfo = document.getElementById('sizeInfo');
+    const quantizeToggle = document.getElementById('quantizeToggle');
+    const colorGrid = document.getElementById('colorGrid');
+    const paletteCountSpan = document.getElementById('paletteCount');
+    const paletteInput = document.getElementById('paletteInput');
+    const applyPaletteBtn = document.getElementById('applyPaletteBtn');
+    const loadExampleBtn = document.getElementById('loadExampleBtn');
+    const clearPaletteBtn = document.getElementById('clearPaletteBtn');
 
     // 状态
-    let currentImage = null;            // 当前加载的 Image 对象 (用于绘制)
-    let currentObjectURL = null;        // 用于 revoke
+    let currentImage = null;
     let isImageReady = false;
-    
-    // 默认显示占位画布 (绘制提示文字)
-    const defaultCtx = pixelCanvas.getContext('2d');
-    function drawPlaceholderOnCanvas() {
-      const w = pixelCanvas.width, h = pixelCanvas.height;
-      defaultCtx.clearRect(0, 0, w, h);
-      defaultCtx.fillStyle = '#1a2128';
-      defaultCtx.fillRect(0, 0, w, h);
-      defaultCtx.fillStyle = '#b9aa8f';
-      defaultCtx.font = 'bold 16px system-ui, sans-serif';
-      defaultCtx.textAlign = 'center';
-      defaultCtx.textBaseline = 'middle';
-      defaultCtx.fillText('📂 请上传图片', w/2, h/2);
-      // 添加网格装饰
-      defaultCtx.strokeStyle = '#4a4036';
-      defaultCtx.lineWidth = 0.5;
-      for(let i=0;i<w;i+=20) {
-        defaultCtx.beginPath();
-        defaultCtx.moveTo(i,0); defaultCtx.lineTo(i,h);
-        defaultCtx.strokeStyle = '#3f3a32'; defaultCtx.stroke();
-      }
-      for(let i=0;i<h;i+=20) {
-        defaultCtx.beginPath();
-        defaultCtx.moveTo(0,i); defaultCtx.lineTo(w,i);
-        defaultCtx.strokeStyle = '#3f3a32'; defaultCtx.stroke();
-      }
-    }
-    drawPlaceholderOnCanvas();
+    let currentObjectURL = null;
+    let palette = [];  // 存储 { r, g, b, hex, name }
 
-    // 更新滑块显示
-    function updateSliderDisplay() {
-      const val = pixelSizeSlider.value;
-      pixelSizeSpan.textContent = val;
+    // ---------- 初始化画布占位 ----------
+    function drawPlaceholder() {
+      const ctx = pixelCanvas.getContext('2d');
+      const w = pixelCanvas.width, h = pixelCanvas.height;
+      ctx.clearRect(0,0,w,h);
+      ctx.fillStyle = '#1a2128'; ctx.fillRect(0,0,w,h);
+      ctx.fillStyle = '#b9aa8f'; ctx.font = 'bold 16px system-ui';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('📂 请上传图片', w/2, h/2);
     }
+    drawPlaceholder();
+
+    // 滑块显示
+    function updateSliderDisplay() { pixelSizeSpan.textContent = pixelSizeSlider.value; }
     pixelSizeSlider.addEventListener('input', updateSliderDisplay);
     updateSliderDisplay();
 
-    // ---------- 核心：生成像素画 ----------
+    // ---------- 调色板渲染 ----------
+    function renderPalette() {
+      if (!palette.length) {
+        colorGrid.innerHTML = '<div style="color:#aaa; grid-column:1/-1; text-align:center; padding:20px;">✨ 暂无颜色，粘贴或加载示例</div>';
+        paletteCountSpan.textContent = '0 色';
+        return;
+      }
+      let html = '';
+      palette.forEach(c => {
+        html += `<div class="color-swatch">
+          <div class="color-preview" style="background: rgb(${c.r},${c.g},${c.b});"></div>
+          <div class="color-label">${c.name || ''}</div>
+          <div class="color-hex">${c.hex}</div>
+        </div>`;
+      });
+      colorGrid.innerHTML = html;
+      paletteCountSpan.textContent = palette.length + ' 色';
+    }
+
+    // 解析色表文本 (支持 "A1 250.245.205 FAF5CD" 或 "A1 250 245 205 FAF5CD")
+    function parsePaletteText(text) {
+      const lines = text.split('\n');
+      const newPalette = [];
+      for (let line of lines) {
+        line = line.trim();
+        if (line === '' || line.startsWith('|') || line.startsWith('色号')) continue;
+        // 匹配: 色号(字母数字) + 三组数字(点或空格分隔) + 六位hex(可选)
+        const parts = line.split(/\s+/);
+        if (parts.length < 2) continue;
+        const name = parts[0];
+        // 寻找rgb部分：可能是 "250.245.205" 或 "250 245 205"
+        let rgbStr = '';
+        let hex = '';
+        for (let i=1; i<parts.length; i++) {
+          const p = parts[i];
+          if (/^[0-9]{1,3}[.\s][0-9]{1,3}[.\s][0-9]{1,3}$/.test(p) || /^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/.test(p)) {
+            rgbStr = p;
+          } else if (/^[0-9A-Fa-f]{6}$/.test(p)) {
+            hex = p.toUpperCase();
+          }
+        }
+        if (!rgbStr) continue;
+        const rgbParts = rgbStr.split(/[.\s]+/).map(Number);
+        if (rgbParts.length < 3) continue;
+        const r = rgbParts[0], g = rgbParts[1], b = rgbParts[2];
+        if (isNaN(r)||isNaN(g)||isNaN(b)) continue;
+        if (!hex) {
+          hex = ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+        }
+        newPalette.push({ name, r, g, b, hex });
+      }
+      return newPalette;
+    }
+
+    function setPalette(newPalette) {
+      palette = newPalette;
+      renderPalette();
+    }
+
+    // 内置完整色表 (基于提供的221色号表，去重整理)
+    function getFullExamplePalette() {
+      // 从两个表格合并，这里给出代表性的约120种颜色，保证丰富
+      const raw = `
+A1 250.245.205 FAF5CD  B1 223.241.59 DFF13B  C1 240.254.228 F0FEE4  D1 172.183.239 ACB7EF  E1 246.212.203 F6D4CB
+A2 252.254.214 FCFED6  B2 100.243.67 64F343  C2 171.248.254 ABF8FE  D2 134.141.211 868DD3  E2 252.193.221 FCC1DD
+A3 252.255.146 FCFF92  B3 161.245.134 A1F586  C3 26.224.247 1AE0F7  D3 53.84.175 3554AF  E3 246.189.232 F6BDE8
+A4 247.236.92 F7EC5C  B4 95.223.52 5FDF34  C4 68.205.251 44CDFB  D4 22.45.123 162D7B  E4 232.100.158 E8649E
+A5 240.216.58 F0D83A  B5 57.225.88 39E158  C5 6.170.223 06AADF  D5 179.78.198 B34EC6  E5 240.86.159 F0569F
+A6 253.169.81 FDA951  B6 100.224.164 64E0A4  C6 84.167.233 54A7E9  D6 179.123.220 B37BDC  E6 235.65.114 EB4172
+A7 250.140.79 FA8C4F  B7 62.174.124 3EAE7C  C7 57.119.202 3977CA  D7 135.88.169 8758A9  E7 197.54.116 C53674
+A8 251.218.77 FBDA4D  B8 29.155.84 1D9B54  C8 15.82.189 0F52BD  D8 227.210.254 E3D2FE  E8 253.219.233 FDDBE9
+A9 247.157.95 F79D5F  B9 42.80.55 2A5037  C9 51.73.195 3349C3  D9 213.185.244 D5B9F4  E9 227.118.199 E376C7
+A10 244.126.56 F47E38 B10 154.209.186 9AD1BA C10 60.188.227 3CBCE3 D10 48.26.73 301A49 E10 209.59.149 D13B95
+A11 254.219.153 FEDB99 B11 98.112.50 627032 C11 42.222.211 2ADED3 D11 190.185.226 BEB9E2 E11 247.218.212 F7DAD4
+A12 253.162.118 FDA276 B12 26.110.61 1A6E3D C12 30.51.78 1E334E D12 220.153.206 DC99CE E12 246.147.191 F693BF
+A13 254.198.103 FEC667 B13 200.132.125 C8847D C13 205.231.254 CDE7FE D13 181.3.141 B5038D E13 181.1.106 B5016A
+A14 247.88.66 F75842 B14 171.232.79 ABE84F C14 213.252.247 D5FCF7 D14 134.41.147 862993 E14 250.212.191 FAD4BF
+A15 251.246.94 FBF65E B15 48.83.53 305335 C15 33.197.196 21C5C4 D15 47.31.140 2F1F8C E15 245.201.202 F5C9CA
+A16 254.255.151 FEFF97 B16 192.237.79 C0ED4F C16 24.88.162 1858A2 D16 226.228.240 E2E4F0 E16 251.244.236 FBF4EC
+A17 253.225.115 FDE173 B17 158.179.62 9EB33E C17 2.209.243 02D1F3 D17 199.211.249 C7D3F9 E17 247.227.236 F7E3EC
+A18 252.191.128 FCBF80 B18 230.237.79 E6ED4F C18 33.50.68 213244 D18 154.100.184 9A64B8 E18 249.200.219 F9C8DB
+A19 253.126.119 FD7E77 B19 38.138.142 268A8E C19 24.134.157 18869D D19 216.194.217 D8C2D9 E19 246.187.209 F6BBD1
+A20 249.214.110 F9D66E B20 203.236.207 CBECC7 C20 26.112.169 1A70A9 D20 154.53.173 9A35AD E20 215.198.206 D7C6CE
+A21 250.227.147 FAE393 B21 24.97.106 18616A C21 188.221.252 BCDDFC D21 148.5.149 940595 E21 192.157.164 C09DA4
+A22 237.248.120 EDF878 B22 10.66.65 0A4241 C22 107.177.187 6BB1BB D22 56.56.154 38389A E22 179.140.159 B38C9F
+A23 228.200.186 E4C8BA B23 52.59.26 343B1A C23 200.226.253 C8E2FD D23 234.219.248 EADBF8 E23 147.125.138 937D8A
+A24 243.246.169 F3F6A9 B24 232.250.166 E8FAA6 C24 126.197.249 7EC5F9 D24 118.138.225 768AE1 E24 222.190.129 DEBE81
+A25 255.215.133 FFD785 B25 78.132.109 4E846D C25 169.232.224 A9E8E0 D25 73.80.194 4950C2
+      `;
+      return parsePaletteText(raw);
+    }
+
+    // 初始加载示例色板 (但让用户点击)
+    // 先置空
+
+    // ---------- 颜色量化：找最近色 ----------
+    function findClosestColor(r, g, b) {
+      if (!palette.length) return { r, g, b };
+      let minDist = Infinity;
+      let best = palette[0];
+      for (let c of palette) {
+        const dr = r - c.r, dg = g - c.g, db = b - c.b;
+        const dist = dr*dr + dg*dg + db*db; // 欧几里得距离平方
+        if (dist < minDist) { minDist = dist; best = c; }
+      }
+      return { r: best.r, g: best.g, b: best.b };
+    }
+
+    // ---------- 生成像素画 (支持量化) ----------
     function generatePixelArt() {
       if (!isImageReady || !currentImage) {
-        // 如果没有图片，保留占位（但画布可能被错误调用，安全起见）
-        if (!isImageReady) {
-          drawPlaceholderOnCanvas();
-          sizeInfo.textContent = '画布: 等待图片上传';
-        }
+        if (!isImageReady) drawPlaceholder();
         return;
       }
-
       const img = currentImage;
       const blockSize = parseInt(pixelSizeSlider.value, 10);
-      if (blockSize < 1) return;
+      const naturalW = img.naturalWidth, naturalH = img.naturalHeight;
+      if (naturalW===0||naturalH===0) return;
 
-      const naturalW = img.naturalWidth;
-      const naturalH = img.naturalHeight;
-      if (naturalW === 0 || naturalH === 0) return;
-
-      // 计算小尺寸 (每个块对应原图 blockSize 个像素)
-      const smallWidth = Math.max(1, Math.floor(naturalW / blockSize));
-      const smallHeight = Math.max(1, Math.floor(naturalH / blockSize));
-
-      // 创建离屏小画布 (尺寸 = 网格数)
+      const smallW = Math.max(1, Math.floor(naturalW / blockSize));
+      const smallH = Math.max(1, Math.floor(naturalH / blockSize));
+      
       const offCanvas = document.createElement('canvas');
-      offCanvas.width = smallWidth;
-      offCanvas.height = smallHeight;
+      offCanvas.width = smallW; offCanvas.height = smallH;
       const offCtx = offCanvas.getContext('2d');
-      // 关键: 关闭平滑，产生硬边缘
       offCtx.imageSmoothingEnabled = false;
-      // 绘制原图到小画布 (拉伸填充)
-      offCtx.drawImage(img, 0, 0, smallWidth, smallHeight);
-
-      // 设置显示画布的最终尺寸 (每个块放大到 blockSize 像素)
-      const finalWidth = smallWidth * blockSize;
-      const finalHeight = smallHeight * blockSize;
-      pixelCanvas.width = finalWidth;
-      pixelCanvas.height = finalHeight;
-
+      offCtx.drawImage(img, 0, 0, smallW, smallH);
+      
+      // 获取小图像素数据
+      const imgData = offCtx.getImageData(0, 0, smallW, smallH);
+      const data = imgData.data;
+      
+      const useQuantize = quantizeToggle.checked && palette.length > 0;
+      
+      // 创建最终画布
+      const finalW = smallW * blockSize, finalH = smallH * blockSize;
+      pixelCanvas.width = finalW; pixelCanvas.height = finalH;
       const ctx = pixelCanvas.getContext('2d');
-      // 同样关闭平滑，保持像素感
       ctx.imageSmoothingEnabled = false;
       
-      // 可选: 填充底色 (若图片有透明区域，保留透明效果。这里不做强制填充)
-      ctx.clearRect(0, 0, finalWidth, finalHeight);
+      if (useQuantize) {
+        // 量化模式：对每个小块采样平均色或直接用小图像素
+        const finalImgData = ctx.createImageData(finalW, finalH);
+        for (let sy = 0; sy < smallH; sy++) {
+          for (let sx = 0; sx < smallW; sx++) {
+            const idx = (sy * smallW + sx) * 4;
+            const r = data[idx], g = data[idx+1], b = data[idx+2], a = data[idx+3];
+            const q = findClosestColor(r, g, b);
+            // 填充对应的大块
+            for (let dy = 0; dy < blockSize; dy++) {
+              for (let dx = 0; dx < blockSize; dx++) {
+                const px = sx * blockSize + dx;
+                const py = sy * blockSize + dy;
+                const pIdx = (py * finalW + px) * 4;
+                finalImgData.data[pIdx] = q.r;
+                finalImgData.data[pIdx+1] = q.g;
+                finalImgData.data[pIdx+2] = q.b;
+                finalImgData.data[pIdx+3] = a;
+              }
+            }
+          }
+        }
+        ctx.putImageData(finalImgData, 0, 0);
+      } else {
+        // 普通模式：直接放大
+        ctx.drawImage(offCanvas, 0, 0, finalW, finalH);
+      }
       
-      // 将离屏小画布绘制到主画布，放大 blockSize 倍
-      ctx.drawImage(offCanvas, 0, 0, finalWidth, finalHeight);
-
-      // 更新信息
-      sizeInfo.textContent = `画布: ${finalWidth} x ${finalHeight}  (块大小: ${blockSize}px)`;
+      sizeInfo.textContent = `画布: ${finalW}x${finalH} · 块:${blockSize}px ${useQuantize?'· 已量化':''}`;
     }
 
-    // ---------- 处理图片加载 ----------
-    function handleNewImageFile(file) {
+    // 滑块 & 量化开关触发重绘
+    pixelSizeSlider.addEventListener('input', () => { updateSliderDisplay(); generatePixelArt(); });
+    quantizeToggle.addEventListener('change', generatePixelArt);
+    
+    // 图片处理
+    function handleNewImage(file) {
       if (!file) return;
-
-      // 显示文件名
-      fileNameDisplay.textContent = file.name.length > 30 ? file.name.substring(0,28)+'…' : file.name;
-
-      // 清理旧的 object URL
-      if (currentObjectURL) {
-        URL.revokeObjectURL(currentObjectURL);
-        currentObjectURL = null;
-      }
-
-      const objectURL = URL.createObjectURL(file);
-      currentObjectURL = objectURL;
-
+      fileNameDisplay.textContent = file.name.length>25? file.name.substr(0,22)+'…': file.name;
+      if (currentObjectURL) URL.revokeObjectURL(currentObjectURL);
+      const url = URL.createObjectURL(file);
+      currentObjectURL = url;
       const img = new Image();
-      img.crossOrigin = 'Anonymous'; // 对本地文件无害，但保留
-      
-      img.onload = function() {
-        // 更新预览图
-        originalPreview.src = objectURL;
-        
-        // 保存为当前图片
+      img.crossOrigin = 'Anonymous';
+      img.onload = () => {
+        originalPreview.src = url;
         currentImage = img;
         isImageReady = true;
-        
-        // 生成像素画
         generatePixelArt();
-        
-        // 启用下载 (实际上按钮一直可用，但无图片时下载占位不太好，不过我们会在下载时做判断)
       };
-
-      img.onerror = function() {
-        fileNameDisplay.textContent = '❌ 图片加载失败';
-        isImageReady = false;
-        currentImage = null;
-        drawPlaceholderOnCanvas();
-        sizeInfo.textContent = '画布: 图片无效';
-        originalPreview.src = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'150\'%3E%3Crect width=\'200\' height=\'150\' fill=\'%23332211\'/%3E%3Ctext x=\'20\' y=\'85\' fill=\'%23aa5533\'%3E加载失败%3C/text%3E%3C/svg%3E';
-        if (currentObjectURL) {
-          URL.revokeObjectURL(currentObjectURL);
-          currentObjectURL = null;
-        }
-      };
-
-      img.src = objectURL;
+      img.onerror = () => { fileNameDisplay.textContent='加载失败'; isImageReady=false; drawPlaceholder(); };
+      img.src = url;
     }
-
-    // ---------- 监听文件上传 ----------
-    fileInput.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (!file) {
-        fileNameDisplay.textContent = '未选择文件';
-        return;
-      }
-      handleNewImageFile(file);
-    });
-
-    // ---------- 滑块变化重新生成 ----------
-    pixelSizeSlider.addEventListener('input', function() {
-      updateSliderDisplay();
-      if (isImageReady && currentImage) {
-        generatePixelArt();
-      } else {
-        // 如果无图片，只更新数值显示，画布保留占位
-        if (!isImageReady) {
-          drawPlaceholderOnCanvas();
-          sizeInfo.textContent = `画布: 无图片 (块大小: ${pixelSizeSlider.value})`;
-        }
-      }
-    });
-
-    // 额外：当滑块松开时也确保生成 (input已经覆盖)
     
-    // ---------- 下载像素画 ----------
-    downloadBtn.addEventListener('click', function() {
-      if (!isImageReady || !currentImage) {
-        alert('请先上传一张图片～');
-        return;
-      }
-      
-      // 以防画布尺寸为0
-      if (pixelCanvas.width === 0 || pixelCanvas.height === 0) {
-        generatePixelArt(); // 尝试重新生成
-      }
-      
-      // 创建下载链接
+    fileInput.addEventListener('change', e => { if(e.target.files[0]) handleNewImage(e.target.files[0]); });
+    
+    // 下载
+    downloadBtn.addEventListener('click', () => {
+      if(!isImageReady) { alert('请先上传图片'); return; }
       const link = document.createElement('a');
-      link.download = `pixel_art_${Date.now()}.png`;
-      
-      // 直接导出画布为 PNG (保留透明)
+      link.download = `pixel_${Date.now()}.png`;
       link.href = pixelCanvas.toDataURL('image/png');
       link.click();
     });
 
-    // ---------- 可选：拖拽上传 (提升体验) ----------
-    const card = document.querySelector('.card');
-    card.addEventListener('dragover', (e) => {
+    // 调色板操作
+    applyPaletteBtn.addEventListener('click', () => {
+      const text = paletteInput.value;
+      const newPal = parsePaletteText(text);
+      if (newPal.length) setPalette(newPal); else alert('未解析到有效颜色，请检查格式');
+      generatePixelArt(); // 如果量化开启则更新
+    });
+    
+    loadExampleBtn.addEventListener('click', () => {
+      const example = getFullExamplePalette();
+      setPalette(example);
+      paletteInput.value = example.map(c=>`${c.name} ${c.r}.${c.g}.${c.b} ${c.hex}`).join('\n');
+      generatePixelArt();
+    });
+    
+    clearPaletteBtn.addEventListener('click', () => {
+      setPalette([]);
+      paletteInput.value = '';
+      generatePixelArt();
+    });
+
+    // 初始化: 加载一个精简示例到文本框，但调色板先置空，用户可点加载
+    paletteInput.value = `A1 250.245.205 FAF5CD\nA6 253.169.81 FDA951\nB3 161.245.134 A1F586\nC4 68.205.251 44CDFB\nD8 227.210.254 E3D2FE\nE14 250.212.191 FAD4BF`;
+    setPalette([]);  // 初始空，让用户决定是否加载
+
+    // 拖拽上传
+    const studio = document.querySelector('.studio');
+    studio.addEventListener('dragover', e=>{e.preventDefault();});
+    studio.addEventListener('drop', e=>{
       e.preventDefault();
-      card.style.boxShadow = '0 20px 40px #000000b0, 0 0 0 2px #eebb77 inset';
-    });
-    card.addEventListener('dragleave', () => {
-      card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(230, 180, 80, 0.1) inset';
-    });
-    card.addEventListener('drop', (e) => {
-      e.preventDefault();
-      card.style.boxShadow = '0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(230, 180, 80, 0.1) inset';
-      const files = e.dataTransfer.files;
-      if (files.length > 0) {
-        const file = files[0];
-        if (file.type.startsWith('image/')) {
-          // 同步 file input (虽然不是必须，但保持一致性)
-          fileInput.files = files; 
-          handleNewImageFile(file);
-        } else {
-          alert('请拖放图片文件');
-        }
-      }
+      const file = e.dataTransfer.files[0];
+      if(file && file.type.startsWith('image/')) { fileInput.files = e.dataTransfer.files; handleNewImage(file); }
     });
 
-    // 额外小优化: 如果图片已加载，但用户通过其他方式想刷新，不需要额外操作
-    // 如果用户想重新上传同一文件，input change也会触发
+    // 清理内存
+    window.addEventListener('beforeunload', ()=>{ if(currentObjectURL) URL.revokeObjectURL(currentObjectURL); });
     
-    // 初始化占位信息
-    window.addEventListener('load', function() {
-      // 设置一个友好的默认提示
-      if (!isImageReady) {
-        sizeInfo.textContent = `画布: 400 x 300 (上传图片后自动生成)`;
-      }
-    });
-
-    // 提供重置功能？不需要，但增加健壮性：当原图预览加载失败时恢复。
-    // 处理图片更新后，如果通过滑块不断生成，已经OK
-    
-    // 若图片尺寸极大，避免卡死？已经做了floor，没问题。
-    // 另外如果图片是svg等，naturalWidth可能不准，但可接受。
-    
-    // 增加一个细节：如果用户上传后，再次点击相同文件可能不触发change。但没关系，大部分情况够用。
-    // 也可以增加一个“重新加载”按钮，但非必须。
-    
-    // 如果原图更新了，但currentImage仍然为旧图？在handleNewImageFile里已经更新。
-    
-    // 内存清理：当页面卸载时revoke
-    window.addEventListener('beforeunload', function() {
-      if (currentObjectURL) {
-        URL.revokeObjectURL(currentObjectURL);
-      }
-    });
-
-    // 如果用户上传了图片，然后滑块拖动，一切正常。
-    // 附加：在生成像素画前确保原图已完全解码。img.onload 已保证。
-    
-    // 边缘情况：如果图片自然尺寸极小，比如小于blockSize，smallWidth会变成1，没问题。
-    // 显示画布尺寸信息更准确。
-    
-    // 同步滑块显示文本与生成时的值一致
-    // 由于generatePixelArt读取滑块当前值，已经同步。
-    
-    // 最后: 为了首次打开体验，可以提供一个隐藏的示例？不需要，保持简洁。
+    // 初始渲染
+    renderPalette();
   })();
 </script>
 </body>
